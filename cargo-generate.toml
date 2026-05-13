@@ -9,6 +9,7 @@ exclude = [
     "dist-workspace.toml",
     "cliff.toml",
     ".github/workflows/release.yml",
+    "LICENSE",
 ]
 
 [hooks]
