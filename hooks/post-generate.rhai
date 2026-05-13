@@ -6,34 +6,15 @@
 system::command("git", ["init", "-q"]);
 system::command("git", ["add", "-A"]);
 
-// cargo dist init -y  →  dist-workspace.toml + .github/workflows/release.yml
-try {
-    system::command("cargo", ["dist", "init", "-y", "--skip-generate"]);
-} catch {
-    print("⛔  cargo dist init failed. Is cargo-dist installed?");
-    print("    Run: cargo install cargo-dist");
-    throw "cargo dist init failed";
-}
-
-// git-cliff --init  →  cliff.toml
-try {
-    system::command("git-cliff", ["--init"]);
-} catch {
-    print("⛔  git-cliff --init failed. Is git-cliff installed?");
-    print("    Run: cargo install git-cliff");
-    throw "git-cliff --init failed";
-}
-
-// Stage any files added by cargo dist / git-cliff
-system::command("git", ["add", "-A"]);
-
 print("");
 print("✓  scaffolded successfully.");
 print("");
 print("   Next steps:");
 print("   1. git commit -m 'chore: initial scaffold'");
 print("   2. gh repo create <name> --source=. --push   (or connect an existing remote)");
-print("   3. cargo dist generate                       (generates .github/workflows/release.yml)");
+print("   3. cargo dist init -y                        (sets up dist-workspace.toml)");
+print("   4. cargo dist generate                       (generates .github/workflows/release.yml)");
+print("   5. git-cliff --init                          (generates cliff.toml)");
 print("");
 print("   cargo xtask check          — fmt + check + clippy");
 print("   cargo xtask test           — check + test suite");
