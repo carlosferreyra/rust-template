@@ -16,11 +16,6 @@ exclude = [
 pre  = ["hooks/pre-generate.rhai"]
 post = ["hooks/post-generate.rhai"]
 
-[placeholders.project_name]
-type    = "string"
-prompt  = "Project name"
-regex   = "^[a-z][a-z0-9-]*$"
-
 [placeholders.project_description]
 type    = "string"
 prompt  = "One-line description (optional)"
