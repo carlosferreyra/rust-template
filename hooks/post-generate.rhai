@@ -8,7 +8,7 @@ system::command("git", ["add", "-A"]);
 
 // cargo dist init -y  →  dist-workspace.toml + .github/workflows/release.yml
 try {
-    system::command("cargo", ["dist", "init", "-y"]);
+    system::command("cargo", ["dist", "init", "-y", "--skip-generate"]);
 } catch {
     print("⛔  cargo dist init failed. Is cargo-dist installed?");
     print("    Run: cargo install cargo-dist");
