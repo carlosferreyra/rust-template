@@ -28,7 +28,12 @@ try {
 system::command("git", ["add", "-A"]);
 
 print("");
-print("✓  scaffolded successfully. Run: git commit -m 'chore: initial scaffold'");
+print("✓  scaffolded successfully.");
+print("");
+print("   Next steps:");
+print("   1. git commit -m 'chore: initial scaffold'");
+print("   2. gh repo create <name> --source=. --push   (or connect an existing remote)");
+print("   3. cargo dist generate                       (generates .github/workflows/release.yml)");
 print("");
 print("   cargo xtask check          — fmt + check + clippy");
 print("   cargo xtask test           — check + test suite");
