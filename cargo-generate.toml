@@ -16,6 +16,11 @@ exclude = [
 pre  = ["hooks/pre-generate.rhai"]
 post = ["hooks/post-generate.rhai"]
 
+[placeholders.github_username]
+type    = "string"
+prompt  = "GitHub username"
+regex   = "^[a-zA-Z0-9]([a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?$"
+
 [placeholders.project_description]
 type    = "string"
 prompt  = "One-line description (optional)"

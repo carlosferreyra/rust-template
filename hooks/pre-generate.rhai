@@ -27,12 +27,6 @@ if github_username == "" {
     } catch {}
 }
 
-if github_username == "" {
-    print("⛔  Could not determine GitHub username.");
-    print("    Run `gh auth login` and try again, or set git remote.origin.url.");
-    throw "github_username resolution failed";
-}
-
 variable::set("github_username", `${github_username}`);
 
 // Resolve author_name and author_email from git config.
