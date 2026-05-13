@@ -1,3 +1,3 @@
 fn main() {
-    println!("{}", {{project_name}}::hello());
+    println!("{}", {{crate_name}}::hello());
 }

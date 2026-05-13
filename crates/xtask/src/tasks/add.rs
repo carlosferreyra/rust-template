@@ -41,7 +41,7 @@ fn workspace_inheritable_fields() -> Vec<&'static str> {
         .collect()
 }
 
-const PROJECT_NAME: &str = "{{project_name}}";
+const PROJECT_NAME: &str = "{{project-name}}";
 
 pub fn add(cmd: Add) {
     let suffix = &cmd.name;

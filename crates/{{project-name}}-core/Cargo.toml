@@ -1,6 +1,6 @@
 [package]
-name        = "{{project_name}}-core"
-description = "Core business logic for {{project_name}}."
+name        = "{{project-name}}-core"
+description = "Core business logic for {{project-name}}."
 version.workspace    = true
 edition.workspace    = true
 authors.workspace    = true
@@ -12,4 +12,4 @@ homepage.workspace   = true
 workspace = true
 
 [dependencies]
-{{project_name}}-types = { path = "../{{project-name}}-types" }
+{{project-name}}-types = { path = "../{{project-name}}-types" }

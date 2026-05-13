@@ -7,8 +7,8 @@ version     = "0.0.0"
 edition     = "2024"
 authors     = ["{{author_name}} <{{author_email}}>"]
 license     = "MIT"
-repository  = "https://github.com/{{github_username}}/{{project_name}}"
-homepage    = "https://github.com/{{github_username}}/{{project_name}}"
+repository  = "https://github.com/{{github_username}}/{{project-name}}"
+homepage    = "https://github.com/{{github_username}}/{{project-name}}"
 description = "{{project_description}}"
 
 # Lint policy — inherited by all crates via `[lints] workspace = true`.

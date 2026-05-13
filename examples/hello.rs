@@ -1,4 +1,4 @@
-/// Examples of {{project_name}}.
+/// Examples of {{project-name}}.
 fn main() {
-    println!("{}", {{project_name}}::hello());
+    println!("{}", {{crate_name}}::hello());
 }

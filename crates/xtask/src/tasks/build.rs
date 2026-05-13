@@ -6,6 +6,6 @@ pub fn build() {
     test(Test { filter: None });
     run(&["build", "--workspace", "--release"]);
     {% if include_cli %}
-    run(&["run", "--package", "{{project_name}}-cli", "--release"]);
+    run(&["run", "--package", "{{project-name}}-cli", "--release"]);
     {% endif %}
 }

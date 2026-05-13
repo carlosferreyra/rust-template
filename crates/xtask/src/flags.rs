@@ -1,7 +1,7 @@
 xflags::xflags! {
     src "./src/flags.rs"
 
-    /// Dev automation for the {{project_name}} workspace.
+    /// Dev automation for the {{project-name}} workspace.
     cmd xtask {
         /// Check formatting, types, and lints.
         cmd check {}
@@ -17,7 +17,7 @@ xflags::xflags! {
 
         /// Scaffold a new crate under crates/{{project-name}}-<name>.
         cmd add {
-            /// Name suffix for the new crate (e.g. `http` → `{{project_name}}-http`).
+            /// Name suffix for the new crate (e.g. `http` → `{{project-name}}-http`).
             required name: String
         }
     }

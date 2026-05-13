@@ -1,2 +1,2 @@
-// Core business logic for {{project_name}}.
+// Core business logic for {{project-name}}.
 // No I/O, no external service dependencies.

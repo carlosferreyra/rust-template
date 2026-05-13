@@ -1,4 +1,4 @@
-# Contributing to {{project_name}}
+# Contributing to {{project-name}}
 
 ## Development workflow
 
@@ -15,7 +15,7 @@ cargo xtask build          # before pushing
 cargo xtask add <name>
 ```
 
-Creates `crates/{{project_name}}-<name>/` with a `Cargo.toml` and `src/lib.rs`, inheriting all
+Creates `crates/{{project-name}}-<name>/` with a `Cargo.toml` and `src/lib.rs`, inheriting all
 workspace fields, and appends a stub section to `crates/README.md`.
 
 ## Commit conventions
@@ -27,7 +27,7 @@ Commits must follow [Conventional Commits](https://www.conventionalcommits.org/)
 ```
 
 Common types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`.
-Scope is the crate name without the `{{project_name}}-` prefix.
+Scope is the crate name without the `{{project-name}}-` prefix.
 
 Examples:
 
