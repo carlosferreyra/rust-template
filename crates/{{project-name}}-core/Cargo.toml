@@ -1,0 +1,15 @@
+[package]
+name        = "{{project_name}}-core"
+description = "Core business logic for {{project_name}}."
+version.workspace    = true
+edition.workspace    = true
+authors.workspace    = true
+license.workspace    = true
+repository.workspace = true
+homepage.workspace   = true
+
+[lints]
+workspace = true
+
+[dependencies]
+{{project_name}}-types = { path = "../{{project-name}}-types" }

@@ -1,0 +1,49 @@
+[workspace]
+members  = ["crates/*"]
+resolver = "2"
+
+[workspace.package]
+version     = "0.0.0"
+edition     = "2024"
+authors     = ["{{author_name}} <{{author_email}}>"]
+license     = "MIT"
+repository  = "https://github.com/{{github_username}}/{{project_name}}"
+homepage    = "https://github.com/{{github_username}}/{{project_name}}"
+description = "{{project_description}}"
+
+# Lint policy — inherited by all crates via `[lints] workspace = true`.
+# Mirrors uv's approach: pedantic as a baseline, with pragmatic carve-outs.
+[workspace.lints.rust]
+unsafe_code     = "warn"
+unreachable_pub = "warn"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -2 }
+# Pedantic carve-outs
+missing_errors_doc      = "allow"
+missing_panics_doc      = "allow"
+module_name_repetitions = "allow"
+must_use_candidate      = "allow"
+too_many_lines          = "allow"
+# Restriction lints
+print_stdout = "warn"
+print_stderr = "warn"
+dbg_macro    = "warn"
+get_unwrap   = "warn"
+rc_buffer    = "warn"
+rc_mutex     = "warn"
+use_self     = "warn"
+
+[profile.release]
+lto           = "fat"
+strip         = true
+codegen-units = 1
+
+[profile.dist]
+inherits = "release"
+
+[profile.fast-build]
+inherits  = "dev"
+opt-level = 1
+debug     = 0
+strip     = "debuginfo"

@@ -1,0 +1,31 @@
+[template]
+cargo_generate_version = ">=0.21.0"
+# system::command in the post hook requires --allow-commands at the CLI.
+exclude = [
+    "cargo-generate.toml.bak",
+    "hooks/pre-generate.rhai",
+    "hooks/post-generate.rhai",
+    "release.toml",
+    "dist-workspace.toml",
+    "cliff.toml",
+    ".github/workflows/release.yml",
+]
+
+[hooks]
+pre  = ["hooks/pre-generate.rhai"]
+post = ["hooks/post-generate.rhai"]
+
+[placeholders.project_name]
+type    = "string"
+prompt  = "Project name"
+regex   = "^[a-z][a-z0-9-]*$"
+
+[placeholders.project_description]
+type    = "string"
+prompt  = "One-line description (optional)"
+default = ""
+
+[placeholders.include_cli]
+type    = "bool"
+prompt  = "Include a CLI binary crate?"
+default = true

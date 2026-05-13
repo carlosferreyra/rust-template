@@ -1,0 +1,19 @@
+[package]
+name        = "{{project_name}}-cli"
+description = "Command-line interface for {{project_name}}."
+version.workspace    = true
+edition.workspace    = true
+authors.workspace    = true
+license.workspace    = true
+repository.workspace = true
+homepage.workspace   = true
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "{{project_name}}"
+path = "src/main.rs"
+
+[dependencies]
+{{project_name}} = { path = "../{{project-name}}" }

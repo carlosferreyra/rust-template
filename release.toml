@@ -1,0 +1,3 @@
+pre-release-hook = ["git-cliff", "-o", "CHANGELOG.md", "--tag", "{{version}}"]
+sign-commit = false
+sign-tag    = false

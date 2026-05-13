@@ -1,0 +1,42 @@
+// Resolve github_username before template rendering so Liquid substitutes it.
+// variable::set requires a string literal — use `${}` interpolation to coerce.
+
+let github_username = "";
+
+try {
+    let out = system::command("gh", ["api", "user", "--jq", ".login"]);
+    github_username = `${out}`.trim();
+} catch {}
+
+if github_username == "" {
+    try {
+        let url = system::command("git", ["config", "--get", "remote.origin.url"]);
+        url = `${url}`.trim();
+        if url.contains("github.com/") {
+            github_username = url.split("github.com/")[1].split("/")[0];
+        } else if url.contains("github.com:") {
+            github_username = url.split("github.com:")[1].split("/")[0];
+        }
+    } catch {}
+}
+
+if github_username == "" {
+    try {
+        let out = system::command("git", ["config", "--get", "user.name"]);
+        github_username = `${out}`.trim();
+    } catch {}
+}
+
+if github_username == "" {
+    print("⛔  Could not determine GitHub username.");
+    print("    Run `gh auth login` and try again, or set git remote.origin.url.");
+    throw "github_username resolution failed";
+}
+
+variable::set("github_username", `${github_username}`);
+
+// Exclude the CLI crate when the user opts out.
+let include_cli = variable::get("include_cli");
+if !include_cli {
+    ignore::push("crates/{{project-name}}-cli");
+}

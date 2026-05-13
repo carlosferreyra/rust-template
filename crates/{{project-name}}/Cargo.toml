@@ -1,0 +1,16 @@
+[package]
+name        = "{{project_name}}"
+description = "{{project_description}}"
+version.workspace    = true
+edition.workspace    = true
+authors.workspace    = true
+license.workspace    = true
+repository.workspace = true
+homepage.workspace   = true
+
+[lints]
+workspace = true
+
+[dependencies]
+{{project_name}}-core  = { path = "../{{project-name}}-core" }
+{{project_name}}-types = { path = "../{{project-name}}-types" }

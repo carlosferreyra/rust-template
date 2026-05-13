@@ -1,0 +1,12 @@
+[package]
+name        = "{{project_name}}-types"
+description = "Shared type definitions for {{project_name}}."
+version.workspace    = true
+edition.workspace    = true
+authors.workspace    = true
+license.workspace    = true
+repository.workspace = true
+homepage.workspace   = true
+
+[lints]
+workspace = true
