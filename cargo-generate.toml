@@ -3,6 +3,7 @@ cargo_generate_version = ">=0.21.0"
 # system::command in the post hook requires --allow-commands at the CLI.
 exclude = [
     "cargo-generate.toml.bak",
+    "TEMPLATE.md",
     "hooks/pre-generate.rhai",
     "hooks/post-generate.rhai",
     "release.toml",
