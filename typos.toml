@@ -7,9 +7,14 @@ extend-ignore-re = [
     "[A-Fa-f0-9]{7,}",
 ]
 
+[default.extend-words]
+# Tool names that typos doesn't know.
+clippy = "clippy"
+
 [files]
 extend-exclude = [
     "CHANGELOG.md",
     "Cargo.lock",
     "*.snap",
+    "scripts/uv.json",
 ]

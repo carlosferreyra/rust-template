@@ -1,0 +1,661 @@
+{
+  "toolchain": "[toolchain]\nchannel = \"1.95.0\"\n",
+  "ci_jobs": [
+    "plan",
+    "check-fmt",
+    "check-lint",
+    "check-docs",
+    "check-zizmor",
+    "check-publish",
+    "check-release",
+    "check-generated-files",
+    "test",
+    "test-windows-trampolines",
+    "build-dev-binaries",
+    "test-smoke",
+    "test-integration",
+    "test-system",
+    "test-ecosystem",
+    "build-release-binaries",
+    "build-docker",
+    "bench",
+    "test-publish",
+    "required-checks-passed"
+  ],
+  "workspace_cargo_toml": {
+    "raw_excerpt": "[workspace]\nmembers = [\"crates/*\"]\nexclude = [\n  \"scripts\",\n  # Needs nightly\n  \"crates/uv-trampoline\",\n]\nresolver = \"2\"\n\n[workspace.package]\nedition = \"2024\"\nrust-version = \"1.93.0\"\nhomepage = \"https://pypi.org/project/uv/\"\nrepository = \"https://github.com/astral-sh/uv\"\nauthors = [\"uv\"]\nlicense = \"MIT OR Apache-2.0\"\n\n[workspace.dependencies]\nuv-audit = { version = \"0.0.47\", path = \"crates/uv-audit\" }\nuv-auth = { version = \"0.0.47\", path = \"crates/uv-auth\" }\nuv-bin-install = { version = \"0.0.47\", path = \"crates/uv-bin-install\" }\nuv-build-backend = { version = \"0.0.47\", path = \"crates/uv-build-backend\" }\nuv-build-frontend = { version = \"0.0.47\", path = \"crates/uv-build-frontend\" }\nuv-cache = { version = \"0.0.47\", path = \"crates/uv-cache\" }\nuv-cache-info = { version = \"0.0.47\", path = \"crates/uv-cache-info\" }\nuv-cache-key = { version = \"0.0.47\", path = \"crates/uv-cache-key\" }\nuv-cli = { version = \"0.0.47\", path = \"crates/uv-cli\" }\nuv-client = { version = \"0.0.47\", path = \"crates/uv-client\" }\nuv-configuration = { version = \"0.0.47\", path = \"crates/uv-configuration\" }\nuv-console = { version = \"0.0.47\", path = \"crates/uv-console\" }\nuv-dirs = { version = \"0.0.47\", path = \"crates/uv-dirs\" }\nuv-dispatch = { version = \"0.0.47\", path = \"crates/uv-dispatch\" }\nuv-distribution = { version = \"0.0.47\", path = \"crates/uv-distribution\" }\nuv-distribution-filename = { version = \"0.0.47\", path = \"crates/uv-distribution-filename\" }\nuv-distribution-types = { version = \"0.0.47\", path = \"crates/uv-distribution-types\" }\nuv-extract = { version = \"0.0.47\", path = \"crates/uv-extract\" }\nuv-fastid = { version = \"0.0.47\", path = \"crates/uv-fastid\" }\nuv-flags = { version = \"0.0.47\", path = \"crates/uv-flags\" }\nuv-fs = { version = \"0.0.47\", path = \"crates/uv-fs\", features = [\n  \"serde\",\n  \"tokio\",\n] }\nuv-git = { version = \"0.0.47\", path = \"crates/uv-git\" }\nuv-git-types = { version = \"0.0.47\", path = \"crates/uv-git-types\" }\nuv-globfilter = { version = \"0.0.47\", path = \"crates/uv-globfilter\" }\nuv-install-wheel = { version = \"0.0.47\", path = \"crates/uv-install-wheel\", default-features = false }\nuv-installer = { version = \"0.0.47\", path = \"crates/uv-installer\" }\nuv-keyring = { version = \"0.0.47\", path = \"crates/uv-keyring\" }\nuv-logging = { version = \"0.0.47\", path = \"crates/uv-logging\" }\nuv-macros = { version = \"0.0.47\", path = \"crates/uv-macros\" }\nuv-metadata = { version = \"0.0.47\", path = \"crates/uv-metadata\" }\nuv-netrc = { version = \"0.0.47\", path = \"crates/uv-netrc\" }\nuv-normalize = { version = \"0.0.47\", path = \"crates/uv-normalize\" }\nuv-once-map = { version = \"0.0.47\", path = \"crates/uv-once-map\" }\nuv-options-metadata = { version = \"0.0.47\", path = \"crates/uv-options-metadata\" }\nuv-performance-memory-allocator = { version = \"0.0.47\", path = \"crates/uv-performance-memory-allocator\" }\nuv-pep440 = { version = \"0.0.47\", path = \"crates/uv-pep440\", features = [\n  \"tracing\",\n  \"rkyv\",\n  \"version-ranges\",",
+    "sections": [
+      "[workspace]",
+      "[workspace.package]",
+      "[workspace.dependencies]",
+      "[workspace.lints.rust]",
+      "[workspace.lints.clippy]",
+      "[profile.release]",
+      "[profile.profiling]",
+      "[profile.fast-build]",
+      "[profile.no-debug]",
+      "[profile.minimal-size]",
+      "[profile.dist]"
+    ],
+    "members_line": "members = [\"crates/*\"]"
+  },
+  "config_files": [
+    "dist-workspace.toml",
+    "rustfmt.toml",
+    "clippy.toml",
+    "_typos.toml",
+    ".editorconfig",
+    ".cargo/config.toml"
+  ],
+  "root_layout": [
+    {
+      "name": ".cargo",
+      "type": "dir"
+    },
+    {
+      "name": ".claude",
+      "type": "dir"
+    },
+    {
+      "name": ".config",
+      "type": "dir"
+    },
+    {
+      "name": ".editorconfig",
+      "type": "file"
+    },
+    {
+      "name": ".gitattributes",
+      "type": "file"
+    },
+    {
+      "name": ".github",
+      "type": "dir"
+    },
+    {
+      "name": ".gitignore",
+      "type": "file"
+    },
+    {
+      "name": ".ignore",
+      "type": "file"
+    },
+    {
+      "name": ".known-crates",
+      "type": "file"
+    },
+    {
+      "name": ".pre-commit-config.yaml",
+      "type": "file"
+    },
+    {
+      "name": ".prettierignore",
+      "type": "file"
+    },
+    {
+      "name": ".prettierrc",
+      "type": "file"
+    },
+    {
+      "name": ".python-versions",
+      "type": "file"
+    },
+    {
+      "name": "AGENTS.md",
+      "type": "file"
+    },
+    {
+      "name": "BENCHMARKS.md",
+      "type": "file"
+    },
+    {
+      "name": "CHANGELOG.md",
+      "type": "file"
+    },
+    {
+      "name": "CLAUDE.md",
+      "type": "file"
+    },
+    {
+      "name": "CONTRIBUTING.md",
+      "type": "file"
+    },
+    {
+      "name": "Cargo.lock",
+      "type": "file"
+    },
+    {
+      "name": "Cargo.toml",
+      "type": "file"
+    },
+    {
+      "name": "Dockerfile",
+      "type": "file"
+    },
+    {
+      "name": "LICENSE-APACHE",
+      "type": "file"
+    },
+    {
+      "name": "LICENSE-MIT",
+      "type": "file"
+    },
+    {
+      "name": "README.md",
+      "type": "file"
+    },
+    {
+      "name": "SECURITY.md",
+      "type": "file"
+    },
+    {
+      "name": "STYLE.md",
+      "type": "file"
+    },
+    {
+      "name": "_typos.toml",
+      "type": "file"
+    },
+    {
+      "name": "assets",
+      "type": "dir"
+    },
+    {
+      "name": "changelogs",
+      "type": "dir"
+    },
+    {
+      "name": "clippy.toml",
+      "type": "file"
+    },
+    {
+      "name": "crates",
+      "type": "dir"
+    },
+    {
+      "name": "dist-workspace.toml",
+      "type": "file"
+    },
+    {
+      "name": "docs",
+      "type": "dir"
+    },
+    {
+      "name": "mkdocs.yml",
+      "type": "file"
+    },
+    {
+      "name": "pyproject.toml",
+      "type": "file"
+    },
+    {
+      "name": "python",
+      "type": "dir"
+    },
+    {
+      "name": "ruff.toml",
+      "type": "file"
+    },
+    {
+      "name": "rust-toolchain.toml",
+      "type": "file"
+    },
+    {
+      "name": "rustfmt.toml",
+      "type": "file"
+    },
+    {
+      "name": "scripts",
+      "type": "dir"
+    },
+    {
+      "name": "test",
+      "type": "dir"
+    },
+    {
+      "name": "uv.lock",
+      "type": "file"
+    },
+    {
+      "name": "uv.schema.json",
+      "type": "file"
+    }
+  ],
+  "repo": {
+    "name": "uv",
+    "full_name": "astral-sh/uv",
+    "description": "An extremely fast Python package and project manager, written in Rust.",
+    "homepage": "https://docs.astral.sh/uv",
+    "language": "Rust",
+    "topics": [
+      "packaging",
+      "python",
+      "resolver",
+      "uv"
+    ],
+    "license": {
+      "key": "apache-2.0",
+      "name": "Apache License 2.0",
+      "spdx_id": "Apache-2.0",
+      "url": "https://api.github.com/licenses/apache-2.0",
+      "node_id": "MDc6TGljZW5zZTI="
+    },
+    "default_branch": "main",
+    "visibility": "public",
+    "open_issues_count": 2722,
+    "stargazers_count": 85023,
+    "forks_count": 3121,
+    "created_at": "2023-10-02T20:24:11Z",
+    "updated_at": "2026-05-16T17:42:10Z",
+    "pushed_at": "2026-05-16T17:08:42Z"
+  },
+  "workflows": [
+    {
+      "name": "bench.yml",
+      "type": "file"
+    },
+    {
+      "name": "build-dev-binaries.yml",
+      "type": "file"
+    },
+    {
+      "name": "build-docker.yml",
+      "type": "file"
+    },
+    {
+      "name": "build-release-binaries.yml",
+      "type": "file"
+    },
+    {
+      "name": "check-docs.yml",
+      "type": "file"
+    },
+    {
+      "name": "check-fmt.yml",
+      "type": "file"
+    },
+    {
+      "name": "check-generated-files.yml",
+      "type": "file"
+    },
+    {
+      "name": "check-lint.yml",
+      "type": "file"
+    },
+    {
+      "name": "check-publish.yml",
+      "type": "file"
+    },
+    {
+      "name": "check-release.yml",
+      "type": "file"
+    },
+    {
+      "name": "check-zizmor.yml",
+      "type": "file"
+    },
+    {
+      "name": "ci.yml",
+      "type": "file"
+    },
+    {
+      "name": "publish-crates.yml",
+      "type": "file"
+    },
+    {
+      "name": "publish-docs.yml",
+      "type": "file"
+    },
+    {
+      "name": "publish-mirror.yml",
+      "type": "file"
+    },
+    {
+      "name": "publish-pypi.yml",
+      "type": "file"
+    },
+    {
+      "name": "publish-versions.yml",
+      "type": "file"
+    },
+    {
+      "name": "release-prepare.yml",
+      "type": "file"
+    },
+    {
+      "name": "release.yml",
+      "type": "file"
+    },
+    {
+      "name": "sync-python-releases.yml",
+      "type": "file"
+    },
+    {
+      "name": "test-ecosystem.yml",
+      "type": "file"
+    },
+    {
+      "name": "test-integration.yml",
+      "type": "file"
+    },
+    {
+      "name": "test-smoke.yml",
+      "type": "file"
+    },
+    {
+      "name": "test-system.yml",
+      "type": "file"
+    },
+    {
+      "name": "test-windows-trampolines.yml",
+      "type": "file"
+    },
+    {
+      "name": "test.yml",
+      "type": "file"
+    }
+  ],
+  "crates": [
+    {
+      "name": "uv-audit",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-auth",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-bench",
+      "description": "This is an internal component crate of uv",
+      "publish": false
+    },
+    {
+      "name": "uv-bin-install",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-build-backend",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-build-frontend",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-build",
+      "description": "A Python build backend"
+    },
+    {
+      "name": "uv-cache-info",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-cache-key",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-cache",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-cli",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-client",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-configuration",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-console",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-dev",
+      "description": "This is an internal component crate of uv",
+      "publish": false
+    },
+    {
+      "name": "uv-dirs",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-dispatch",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-distribution-filename",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-distribution-types",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-distribution",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-extract",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-fastid",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-flags",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-fs",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-git-types",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-git",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-globfilter",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-install-wheel",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-installer",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-keyring",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-logging",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-macros",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-metadata",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-netrc",
+      "description": "A vendored netrc parser for uv"
+    },
+    {
+      "name": "uv-normalize",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-once-map",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-options-metadata",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-pep440",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-pep508",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-performance-memory-allocator",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-platform-tags",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-platform",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-preview",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-publish",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-pypi-types",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-python",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-redacted",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-requirements-txt",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-requirements",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-resolver",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-scripts",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-settings",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-shell",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-small-str",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-state",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-static",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-test",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-tool",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-torch",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-trampoline-builder",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-trampoline"
+    },
+    {
+      "name": "uv-types",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-unix",
+      "description": "Unix-specific functionality for uv"
+    },
+    {
+      "name": "uv-version",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-virtualenv",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-warnings",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv-windows",
+      "description": "Windows-specific utilities for uv"
+    },
+    {
+      "name": "uv-workspace",
+      "description": "This is an internal component crate of uv"
+    },
+    {
+      "name": "uv",
+      "description": "A Python package and project manager"
+    }
+  ],
+  "facade_crate": {
+    "top_level": [
+      "Cargo.toml",
+      "README.md",
+      "build.rs",
+      "src",
+      "tests"
+    ],
+    "tests": [
+      "it"
+    ],
+    "tests_it": [
+      "audit.rs",
+      "auth.rs",
+      "branching_urls.rs",
+      "build.rs",
+      "build_backend.rs",
+      "cache.rs",
+      "cache_clean.rs",
+      "cache_prune.rs",
+      "cache_size.rs",
+      "ecosystem.rs"
+    ]
+  }
+}
