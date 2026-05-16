@@ -5,36 +5,28 @@
 // ---------------------------------------------------------------------------
 // Fetch LICENSE from GitHub API
 // ---------------------------------------------------------------------------
+// system::command returns stdout as a String and throws on non-zero exit.
 let license_id = variable::get("license");
-let gh_result = system::command("gh", ["api", `licenses/${license_id}`]);
+let author = variable::get("author_name");
+let current_year = system::command("date", ["+%Y"]).trim();
 
-if gh_result.exit_code == 0 {
-    // Parse the body field out of the JSON response using gh's --jq flag.
-    let body_result = system::command("gh", ["api", `licenses/${license_id}`, "--jq", ".body"]);
-    if body_result.exit_code == 0 {
-        let author = variable::get("author_name");
-        let year = system::command("date", ["+%Y"]);
-        let current_year = year.stdout.trim();
+try {
+    let text = system::command("gh", ["api", `licenses/${license_id}`, "--jq", ".body"]);
 
-        let text = body_result.stdout;
-        // GitHub license templates use two placeholder conventions:
-        //   [bracket] style — MIT, BSD-2, BSD-3
-        //   <angle>   style — AGPL-3.0, GPL-2.0, GPL-3.0, LGPL-2.1
-        text = text.replace("[year]", current_year);
-        text = text.replace("[fullname]", author);
-        text = text.replace("[name of copyright owner]", author);
-        text = text.replace("<year>", current_year);
-        text = text.replace("<name of author>", author);
+    // GitHub license templates use two placeholder conventions:
+    //   [bracket] style — MIT, BSD-2, BSD-3
+    //   <angle>   style — AGPL-3.0, GPL-2.0, GPL-3.0, LGPL-2.1
+    text = text.replace("[year]", current_year);
+    text = text.replace("[fullname]", author);
+    text = text.replace("[name of copyright owner]", author);
+    text = text.replace("<year>", current_year);
+    text = text.replace("<name of author>", author);
 
-        file::write("LICENSE", text);
-        print(`✓  LICENSE (${license_id}) written.`);
-    } else {
-        print(`⚠  Could not parse license body — skipping LICENSE generation.`);
-        print(`   Run: gh api licenses/${license_id} --jq .body > LICENSE`);
-    }
-} else {
-    print(`⚠  Could not fetch license '${license_id}' from GitHub API.`);
-    print(`   Run: gh api licenses/${license_id} --jq .body > LICENSE`);
+    file::write("LICENSE", text);
+    print(`✓  LICENSE (${license_id}) written.`);
+} catch(e) {
+    print(`⚠  Could not fetch license '${license_id}' from GitHub API: ${e}`);
+    print(`   Run manually: gh api licenses/${license_id} --jq .body > LICENSE`);
 }
 
 // ---------------------------------------------------------------------------
