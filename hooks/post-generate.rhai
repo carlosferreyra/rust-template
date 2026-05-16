@@ -18,15 +18,8 @@ try {
     // GitHub license templates use two placeholder conventions:
     //   [bracket] style — MIT, BSD-2, BSD-3
     //   <angle>   style — AGPL-3.0, GPL-2.0, GPL-3.0, LGPL-2.1
-    let text = system::command("sh", [
-        "-c",
-        `gh api licenses/${license_id} --jq .body \
-         | sed 's/\\[year\\]/${current_year}/g' \
-         | sed 's/\\[fullname\\]/${author}/g' \
-         | sed 's/\\[name of copyright owner\\]/${author}/g' \
-         | sed 's/<year>/${current_year}/g' \
-         | sed 's/<name of author>/${author}/g'`
-    ]);
+    let cmd = `gh api licenses/${license_id} --jq .body | sed 's/\\[year\\]/${current_year}/g' | sed 's/\\[fullname\\]/${author}/g' | sed 's/\\[name of copyright owner\\]/${author}/g' | sed 's/<year>/${current_year}/g' | sed 's/<name of author>/${author}/g'`;
+    let text = system::command("sh", ["-c", cmd]);
 
     file::write("LICENSE", text);
     print(`✓  LICENSE (${license_id}) written.`);
