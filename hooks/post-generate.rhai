@@ -39,7 +39,7 @@ try {
     print(`⚠  Could not fetch license '${license_id}' from GitHub API: ${e}`);
     print(`   Run manually: gh api licenses/${license_id} --jq .body > LICENSE`);
 }
-system::command("sh", ["-c", "rm -f _fetch_license.py"]);
+system::command("rm", ["-f", "_fetch_license.py"]);
 
 // ---------------------------------------------------------------------------
 // Next-step instructions
