@@ -95,13 +95,14 @@ workspace = true
         let mut readme = fs::read_to_string(readme_path)
             .unwrap_or_else(|e| panic!("failed to read crates/README.md: {e}"));
         readme.push_str(&format!(
-            "\n## [{crate_name}](./{crate_name})\n\nTODO: describe {crate_name}.\n"
+            "\n## [{crate_name}](./{crate_name})\n\nTODO: one-line role description for {crate_name}.\n"
         ));
         fs::write(readme_path, readme)
             .unwrap_or_else(|e| panic!("failed to update crates/README.md: {e}"));
     }
 
     println!("created crates/{crate_name}");
-    println!("  → update crates/README.md with a real description");
+    println!("  → fill in the TODO in crates/README.md");
+    println!("  → fill in the TODO doc comment in crates/{crate_name}/src/lib.rs");
     println!("  → add it as a dependency in any crate that needs it");
 }
