@@ -8,7 +8,9 @@
 // system::command returns stdout as a String and throws on non-zero exit.
 let license_id = variable::get("license");
 let author = variable::get("author_name");
-let current_year = system::command("date", ["+%Y"]).trim();
+// .trim() is not chainable in this Rhai version — assign first, then strip newline.
+let current_year = system::command("date", ["+%Y"]);
+current_year = current_year.replace("\n", "");
 
 try {
     let text = system::command("gh", ["api", `licenses/${license_id}`, "--jq", ".body"]);
