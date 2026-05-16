@@ -13,16 +13,20 @@ let current_year = system::command("date", ["+%Y"]);
 current_year = current_year.replace("\n", "");
 
 try {
-    let text = system::command("gh", ["api", `licenses/${license_id}`, "--jq", ".body"]);
-
+    // Fetch via shell so we can pipe through sed for substitutions —
+    // Rhai's String::replace returns () on ImmutableString in this version.
     // GitHub license templates use two placeholder conventions:
     //   [bracket] style — MIT, BSD-2, BSD-3
     //   <angle>   style — AGPL-3.0, GPL-2.0, GPL-3.0, LGPL-2.1
-    text = text.replace("[year]", current_year);
-    text = text.replace("[fullname]", author);
-    text = text.replace("[name of copyright owner]", author);
-    text = text.replace("<year>", current_year);
-    text = text.replace("<name of author>", author);
+    let text = system::command("sh", [
+        "-c",
+        `gh api licenses/${license_id} --jq .body \
+         | sed 's/\\[year\\]/${current_year}/g' \
+         | sed 's/\\[fullname\\]/${author}/g' \
+         | sed 's/\\[name of copyright owner\\]/${author}/g' \
+         | sed 's/<year>/${current_year}/g' \
+         | sed 's/<name of author>/${author}/g'`
+    ]);
 
     file::write("LICENSE", text);
     print(`✓  LICENSE (${license_id}) written.`);
