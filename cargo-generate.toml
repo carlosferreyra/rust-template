@@ -11,8 +11,8 @@ exclude = [
     "cliff.toml",
     ".github/workflows/release.yml",
     "LICENSE",
-    ".claude/**",
-    "scripts/**",
+    ".claude",
+    "scripts",
 ]
 
 [hooks]
