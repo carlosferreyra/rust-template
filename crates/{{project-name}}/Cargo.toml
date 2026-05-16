@@ -1,16 +1,24 @@
 [package]
 name        = "{{project-name}}"
 description = "{{project_description}}"
-version.workspace    = true
-edition.workspace    = true
-authors.workspace    = true
-license.workspace    = true
-repository.workspace = true
-homepage.workspace   = true
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+authors.workspace      = true
+license.workspace      = true
+repository.workspace   = true
+homepage.workspace     = true
+readme.workspace       = true
+keywords.workspace     = true
+categories.workspace   = true
 
 [lints]
 workspace = true
 
 [dependencies]
-{{project-name}}-core  = { path = "../{{project-name}}-core" }
-{{project-name}}-types = { path = "../{{project-name}}-types" }
+{{project-name}}-core  = { workspace = true }
+{{project-name}}-types = { workspace = true }
+tracing                = { workspace = true }
+
+[dev-dependencies]
+insta = { workspace = true }

@@ -1,12 +1,19 @@
 [package]
 name        = "{{project-name}}-types"
 description = "Shared type definitions for {{project-name}}."
-version.workspace    = true
-edition.workspace    = true
-authors.workspace    = true
-license.workspace    = true
-repository.workspace = true
-homepage.workspace   = true
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+authors.workspace      = true
+license.workspace      = true
+repository.workspace   = true
+homepage.workspace     = true
+readme.workspace       = true
+keywords.workspace     = true
+categories.workspace   = true
 
 [lints]
 workspace = true
+
+[dependencies]
+thiserror = { workspace = true }

@@ -1,0 +1,13 @@
+# nextest profiles. Local runs use `default`; CI uses `ci` (retries flaky tests
+# and emits JUnit XML for GitHub's test summary).
+# Run with `cargo nextest run --profile <name>`.
+
+[profile.default]
+fail-fast = false
+
+[profile.ci]
+fail-fast = false
+retries   = 2
+
+[profile.ci.junit]
+path = "junit.xml"

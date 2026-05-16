@@ -37,7 +37,7 @@ fn workspace_inheritable_fields() -> Vec<&'static str> {
     INHERITABLE
         .iter()
         .copied()
-        .filter(|&field| pkg.map_or(false, |t| t.contains_key(field)))
+        .filter(|&field| pkg.is_some_and(|t| t.contains_key(field)))
         .collect()
 }
 
@@ -75,7 +75,18 @@ workspace = true
     fs::write(dir.join("Cargo.toml"), cargo_toml)
         .unwrap_or_else(|e| panic!("failed to write crates/{crate_name}/Cargo.toml: {e}"));
 
-    let lib_rs = format!("// {crate_name}\n");
+    let lib_rs = format!(
+        r#"//! {crate_name}
+//!
+//! TODO: replace this line with a one-sentence summary of what the crate does.
+//!
+//! # Examples
+//!
+//! ```
+//! // TODO: add a minimal working example.
+//! ```
+"#
+    );
     fs::write(dir.join("src/lib.rs"), lib_rs)
         .unwrap_or_else(|e| panic!("failed to write crates/{crate_name}/src/lib.rs: {e}"));
 

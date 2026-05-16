@@ -1,331 +1,172 @@
 # rust-template
 
 > A [`cargo-generate`](https://github.com/cargo-generate/cargo-generate) template for new Rust
-> workspace projects — uv-repo-inspired structure with xtask automation, cargo-dist releases, and
-> git-cliff changelogs wired up out of the box.
+> workspace projects — uv-inspired structure, enterprise-grade CI, lockstep crates.io releases,
+> and an `xtask` automation pyramid wired up out of the box.
 
 ## Usage
+
+Interactive:
 
 ```sh
 cargo generate --git https://github.com/carlosferreyra/rust-template --allow-commands
 ```
 
-You will be prompted for:
+Non-interactive (every prompt has a `-d key=value` flag):
 
-| Prompt                      | Notes                                                         |
-| --------------------------- | ------------------------------------------------------------- |
-| Project name                | Becomes the workspace name and the prefix for all crate names |
-| One-line description        | Fills `description` in `[workspace.package]`                  |
-| Include a CLI binary crate? | yes → generates `crates/{{project-name}}-cli/`                |
+```sh
+cargo generate --git https://github.com/carlosferreyra/rust-template --allow-commands \
+  --name my-project \
+  -d github_username=my-user \
+  -d author_name="Your Name" \
+  -d author_email=you@example.com \
+  -d project_description="One-line description." \
+  -d include_cli=true
+```
 
-Everything else is pre-decided and wired automatically.
+| Prompt / flag         | Notes                                                  |
+| --------------------- | ------------------------------------------------------ |
+| `--name`              | Workspace name and prefix for all crates               |
+| `github_username`     | Used in `repository`/`homepage` URLs                   |
+| `author_name`         | `[workspace.package].authors`                          |
+| `author_email`        | `[workspace.package].authors`                          |
+| `project_description` | `[workspace.package].description` (optional)           |
+| `include_cli`         | `true` → also generates `crates/{{project-name}}-cli/` |
 
 ---
 
 ## Prerequisites
 
-These tools must be installed before running `cargo generate`:
-
 ```sh
-cargo install cargo-dist
-cargo install git-cliff
-cargo install cargo-release
+cargo install cargo-generate    # the template runner
+cargo install cargo-dist        # cross-platform binary releases
+cargo install git-cliff         # changelog from conventional commits
+cargo install cargo-release     # workspace version bump + publish
+
+# Optional (used by xtask subcommands and local CI parity):
+cargo install cargo-nextest cargo-llvm-cov cargo-deny cargo-msrv typos-cli
 ```
 
 ---
 
 ## What the post-generate hook does
 
-After `cargo generate` finishes, `hooks/post-generate.rhai` runs automatically and:
+1. Initializes git and commits the scaffold.
+2. Prints next-step commands. **`cargo dist init -y`, `git-cliff --init`, and
+   `gh repo create` are documented but not auto-run** — the user runs them once
+   they're happy with the scaffold.
 
-1. Runs `git init && git add -A && git commit -m "chore: initial scaffold"`.
-2. Runs `cargo dist init -y` — writes `dist-workspace.toml` and `.github/workflows/release.yml`.
-3. Runs `git-cliff --init` — writes `cliff.toml` from the installed version's default
-   conventional-commits config.
-4. Runs `git add -A && git commit --amend --no-edit` — folds the generated files into the initial
-   commit.
-
-`cliff.toml`, `dist-workspace.toml`, and `release.yml` are always generated from the versions
-installed on your machine at scaffolding time — never pinned to this template's age.
+`cliff.toml`, `dist-workspace.toml`, and `release.yml` are generated from the
+versions installed on your machine — never pinned to this template's age.
 
 ---
 
-## Release flow (end-to-end)
+## Workspace shape
 
-Once scaffolded:
+Library-first, modeled after the [uv repository](https://github.com/astral-sh/uv/tree/main/crates):
 
-```sh
-cargo release patch --execute
+| Crate                    | Role                                                              |
+| ------------------------ | ----------------------------------------------------------------- |
+| `{{project-name}}`       | Public API façade — what downstream consumers add to `Cargo.toml` |
+| `{{project-name}}-core`  | Core business logic; no I/O, no external service deps             |
+| `{{project-name}}-types` | Shared types + the `Error` enum (foundation of the dep graph)     |
+| `{{project-name}}-cli`   | CLI binary; thin layer over the façade _(optional)_               |
+| `xtask`                  | Dev automation; not published _(unprefixed by convention)_        |
+
+Dependency order:
+
+```
+types  →  core  →  façade  →  cli (optional)
 ```
 
-1. Bumps `version` in `[workspace.package]`.
-2. Updates `CHANGELOG.md` via git-cliff (via `pre-release-hook` in `release.toml`).
-3. Commits with `chore(release): vX.Y.Z` and pushes a `vX.Y.Z` tag.
-4. The tag triggers `.github/workflows/release.yml` (cargo-dist).
-5. cargo-dist builds cross-platform artifacts and creates a GitHub Release.
+### Publishing model — workspace lockstep
+
+All library crates share a single version and publish together via `cargo release`.
+`{{project-name}}-cli` is `publish = false` (binaries ship via `cargo-dist`); `xtask`
+is `publish = false` (dev-only). There is no per-crate publish toggle — partial
+releases would break the path/version coupling between crates.
 
 ---
 
 ## Development cycle (xtask pyramid)
 
 ```sh
-cargo xtask check          # after every meaningful edit
-cargo xtask test           # before committing
-cargo xtask test <filter>  # scoped test run
-cargo xtask build          # before pushing / smoke-test the binary
-cargo xtask add <name>     # scaffold a new crate
+cargo xtask check          # fmt → check → clippy
+cargo xtask test [filter]  # check → test
+cargo xtask build          # test → release build → smoke-run the CLI
+cargo xtask add <name>     # scaffold crates/{{project-name}}-<name>/
+cargo xtask coverage       # cargo-llvm-cov HTML report
+cargo xtask publish        # workspace dry-run via cargo-release
+cargo xtask publish --execute --level minor
 ```
 
-Each command is a superset of the previous:
-
-| Command                     | What it runs                                                                              |
-| --------------------------- | ----------------------------------------------------------------------------------------- |
-| `cargo xtask check`         | `cargo fmt --all --check` → `cargo check --workspace` → `cargo clippy --workspace`        |
-| `cargo xtask test [filter]` | check → `cargo test --workspace [filter]`                                                 |
-| `cargo xtask build`         | test → `cargo build --workspace --release` → `cargo run -p {{project-name}}-cli` (if CLI) |
-| `cargo xtask add <name>`    | scaffolds `crates/{{project-name}}-<name>/` and registers it in the workspace             |
-
-Clippy strictness is configured via `[workspace.lints]` in `Cargo.toml` (see below) — all crates
-inherit it automatically via `[lints] workspace = true`.
+Each of the first three is a strict superset of the previous — run `check`
+after edits, `test` before committing, `build` before pushing.
 
 ---
 
-## Generated project layout
+## Quality gates (what CI enforces)
 
-```
-my-project/
-├── .cargo/
-│   └── config.toml                    # [alias] xtask = "run --package xtask --"
-├── .github/
-│   └── workflows/
-│       ├── ci.yml                     # fmt + clippy + test + docs (hand-written template)
-│       └── release.yml                # generated by cargo-dist init -y in post-hook
-├── crates/
-│   ├── README.md                      # per-crate descriptions (see format below)
-│   ├── my-project/                    # root lib — public API entrypoint (always present)
-│   │   ├── src/
-│   │   │   └── lib.rs
-│   │   └── Cargo.toml
-│   ├── my-project-core/               # core logic, no external deps (always present)
-│   │   ├── src/
-│   │   │   └── lib.rs
-│   │   └── Cargo.toml
-│   ├── my-project-types/              # shared type definitions — dep graph foundation (always present)
-│   │   ├── src/
-│   │   │   └── lib.rs
-│   │   └── Cargo.toml
-│   ├── my-project-cli/                # CLI binary (only if include_cli = true)
-│   │   ├── src/
-│   │   │   └── main.rs                # thin; delegates to my-project lib
-│   │   └── Cargo.toml
-│   └── xtask/                         # dev automation — not published, not distributed
-│       ├── src/
-│       │   ├── flags.rs               # xflags definitions (check / test / build / add)
-│       │   ├── main.rs
-│       │   └── tasks/
-│       │       ├── mod.rs
-│       │       ├── check.rs
-│       │       ├── test.rs
-│       │       ├── build.rs
-│       │       └── add.rs             # scaffolds a new crate + appends to crates/README.md
-│       └── Cargo.toml
-├── examples/
-│   └── hello.rs                       # imports {{project-name}} lib; prints a greeting
-├── Cargo.toml                         # workspace manifest — see format below
-├── Cargo.lock                         # committed (generated on first scaffold)
-├── dist-workspace.toml                # generated by cargo-dist init -y in post-hook
-├── rust-toolchain.toml                # channel = "stable"
-├── cliff.toml                         # generated by git-cliff --init in post-hook
-├── rustfmt.toml                       # edition = "2024"
-├── release.toml                       # cargo-release config with git-cliff pre-release-hook
-├── CHANGELOG.md                       # seeded stub; updated by cargo-release + git-cliff
-├── CONTRIBUTING.md                    # contribution guide stub
-├── .editorconfig                      # editor normalization (release.yml excluded via [**/release.yml] section)
-├── .prettierignore                    # .github/workflows/release.yml
-├── .gitignore                         # /target only
-└── README.md
-```
+| Job      | Tool / file                  | Notes                                                |
+| -------- | ---------------------------- | ---------------------------------------------------- |
+| `format` | `cargo fmt --all --check`    | `rustfmt.toml` is workspace-scoped                   |
+| `clippy` | `-D warnings`                | Pedantic + restrictions via `[workspace.lints]`      |
+| `test`   | `cargo-nextest`              | Matrix: ubuntu/macos/windows; `.config/nextest.toml` |
+| `msrv`   | `cargo-msrv verify`          | Reads `rust-version` from `[workspace.package]`      |
+| `docs`   | `RUSTDOCFLAGS=-D warnings`   | Broken intra-doc links fail the build                |
+| `deny`   | `cargo-deny check`           | Advisories, bans, licenses, sources — `deny.toml`    |
+| `typos`  | `crate-ci/typos`             | `typos.toml`                                         |
+| `semver` | `cargo-semver-checks` (PRs)  | Library crates only                                  |
+| `audit`  | `rustsec/audit-check` (cron) | Separate `audit.yml` — daily + on lockfile change    |
+
+Dependabot bumps cargo and actions weekly.
 
 ---
 
-## Default crates (always scaffolded)
+## Errors, observability, and dependencies
 
-Inspired by the [uv repository](https://github.com/astral-sh/uv/tree/main/crates) crate
-decomposition strategy:
-
-| Crate                    | Role                                                                                                |
-| ------------------------ | --------------------------------------------------------------------------------------------------- |
-| `{{project-name}}`       | Public API entrypoint — what downstream consumers add to their `Cargo.toml`                         |
-| `{{project-name}}-core`  | Core business logic; no I/O, no external service deps                                               |
-| `{{project-name}}-types` | Shared type definitions — foundation of the dep graph; no crate it depends on may depend back on it |
-| `{{project-name}}-cli`   | CLI binary; thin layer over the root lib _(optional)_                                               |
-| `xtask`                  | Dev automation; not published _(unprefixed by convention)_                                          |
-
-Dependency order (no cycles):
-
-```
-{{project-name}}-types  →  {{project-name}}-core
-{{project-name}}-core   →  {{project-name}}
-{{project-name}}        →  {{project-name}}-cli   (optional)
-```
-
-Additional crates are added via `cargo xtask add <name>` → creates
-`crates/{{project-name}}-<name>/`.
+- **Errors:** library crates use `thiserror`-derived enums (see
+  `crates/{{project-name}}-types/src/lib.rs`). The CLI converts to `anyhow` at the
+  boundary with `.context(...)` so users get a chain on failure.
+- **Tracing:** library code emits `tracing` events only; the binary owns the
+  subscriber (see `crates/{{project-name}}-cli/src/logging.rs`). `RUST_LOG`
+  controls the filter; output is JSON when stderr is not a TTY.
+- **Shared deps:** `[workspace.dependencies]` in the root `Cargo.toml` declares
+  every external dep with a major-only version range. Inter-workspace path
+  deps live there too — `{ path = "...", version = "0.0.0" }` — so cargo-deny
+  doesn't flag them as wildcards and `cargo release` flips them to crates.io
+  versions on publish. Per-crate `Cargo.toml` files inherit with
+  `dep.workspace = true`.
 
 ---
 
-## `Cargo.toml` format (workspace manifest)
+## Release flow (end-to-end)
 
-Modelled after the [uv workspace Cargo.toml](https://github.com/astral-sh/uv/blob/main/Cargo.toml):
-
-```toml
-[workspace]
-members  = ["crates/*"]
-resolver = "2"
-
-[workspace.package]
-version     = "0.0.0"
-edition     = "2024"
-authors     = ["{{author_name}} <{{author_email}}>"]
-license     = "MIT"
-repository  = "https://github.com/{{github_username}}/{{project-name}}"
-homepage    = "https://github.com/{{github_username}}/{{project-name}}"
-description = "{{project_description}}"
-
-# Lint policy — inherited by all crates via `[lints] workspace = true`.
-# Mirrors uv's approach: pedantic as a baseline, with pragmatic carve-outs.
-[workspace.lints.rust]
-unsafe_code     = "warn"
-unreachable_pub = "warn"
-
-[workspace.lints.clippy]
-pedantic = { level = "warn", priority = -2 }
-# Pedantic carve-outs
-missing_errors_doc      = "allow"
-missing_panics_doc      = "allow"
-module_name_repetitions = "allow"
-must_use_candidate      = "allow"
-too_many_lines          = "allow"
-# Restriction lints
-print_stdout = "warn"
-print_stderr = "warn"
-dbg_macro    = "warn"
-get_unwrap   = "warn"
-rc_buffer    = "warn"
-rc_mutex     = "warn"
-use_self     = "warn"
-
-[profile.release]
-lto           = "fat"
-strip         = true
-codegen-units = 1
-
-[profile.dist]
-inherits = "release"
-
-[profile.fast-build]
-inherits  = "dev"
-opt-level = 1
-debug     = 0
-strip     = "debuginfo"
+```sh
+cargo xtask publish --execute --level patch
+# equivalent to:
+cargo release patch --workspace --execute
 ```
 
-Each crate's `Cargo.toml` inherits workspace fields and opts into the lint policy:
-
-```toml
-[package]
-name        = "{{project-name}}-core"
-description = "Core logic for {{project-name}}."
-version.workspace    = true
-edition.workspace    = true
-authors.workspace    = true
-license.workspace    = true
-repository.workspace = true
-homepage.workspace   = true
-
-[lints]
-workspace = true
-```
-
----
-
-## `crates/README.md` format
-
-One `##` section per crate, name linking to the directory, one-paragraph description. Modelled after
-[uv's crates/README.md](https://github.com/astral-sh/uv/blob/main/crates/README.md):
-
-```markdown
-# Crates
-
-## [{{project-name}}](./{{project-name}})
-
-Public API entrypoint. The crate downstream consumers add to their `Cargo.toml`.
-
-## [{{project-name}}-core](./{{project-name}}-core)
-
-Core business logic. No I/O, no external service dependencies.
-
-## [{{project-name}}-types](./{{project-name}}-types)
-
-Shared type definitions. No crate that `{{project-name}}-types` depends on may itself depend on
-`{{project-name}}-types` — this crate is the foundation of the dependency graph.
-
-## [{{project-name}}-cli](./{{project-name}}-cli)
-
-Command-line interface. A thin binary that delegates to `{{project-name}}`.
-
-## [xtask](./xtask)
-
-Development automation. Not published. Provides `cargo xtask check`, `test`, `build`, and `add`.
-```
-
-`cargo xtask add <name>` appends a new `##` section to `crates/README.md` with a placeholder
-description for the developer to fill in.
-
----
-
-## `release.toml`
-
-```toml
-pre-release-hook = ["git-cliff", "-o", "CHANGELOG.md", "--tag", "{{version}}"]
-sign-commit = false
-sign-tag    = false
-```
+1. Bumps the workspace version.
+2. Updates `CHANGELOG.md` via git-cliff (`pre-release-hook` in `release.toml`).
+3. Commits `chore(release): vX.Y.Z` and pushes a `vX.Y.Z` tag.
+4. The tag triggers `.github/workflows/release.yml` (cargo-dist).
+5. cargo-dist builds cross-platform binaries and attaches them to the release.
+6. cargo-release publishes the library crates to crates.io in lockstep.
 
 ---
 
 ## Template variables (`cargo-generate.toml`)
 
-| Variable              | Source                    |
-| --------------------- | ------------------------- |
-| `project_name`        | Prompted                  |
-| `project_description` | Prompted (optional)       |
-| `author_name`         | Git config                |
-| `author_email`        | Git config                |
-| `github_username`     | Auto-detected (see below) |
-| `include_cli`         | Prompted (bool)           |
-
-### `github_username` resolution
-
-The post-generate hook resolves the GitHub username automatically — no prompt:
-
-```sh
-# 1. Try gh CLI (most reliable — uses authenticated session)
-github_username=$(gh api user --jq '.login' 2>/dev/null)
-
-# 2. Fallback: parse remote.origin.url from git config
-if [ -z "$github_username" ]; then
-  github_username=$(git config --get remote.origin.url \
-    | sed -E 's|.*github\.com[/:]([^/]+)/.*|\1|')
-fi
-
-# 3. Fallback: local git user.name (best-effort, may not match GitHub handle)
-if [ -z "$github_username" ]; then
-  github_username=$(git config --get user.name)
-fi
-```
-
-If all three fail the hook exits with an error message asking you to run `gh auth login`.
+| Variable              | Type   | Default    |
+| --------------------- | ------ | ---------- |
+| `project-name`        | string | (required) |
+| `github_username`     | string | (required) |
+| `author_name`         | string | (required) |
+| `author_email`        | string | (required) |
+| `project_description` | string | `""`       |
+| `include_cli`         | bool   | `true`     |
 
 ---
 

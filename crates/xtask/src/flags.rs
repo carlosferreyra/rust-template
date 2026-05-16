@@ -20,6 +20,17 @@ xflags::xflags! {
             /// Name suffix for the new crate (e.g. `http` → `{{project-name}}-http`).
             required name: String
         }
+
+        /// Run `cargo llvm-cov --workspace --html` (requires cargo-llvm-cov).
+        cmd coverage {}
+
+        /// Workspace publish via `cargo release`. Dry-run by default.
+        cmd publish {
+            /// Actually execute the release (default: dry-run).
+            optional --execute
+            /// Bump level: patch | minor | major.
+            optional --level level: String
+        }
     }
 }
 
@@ -37,6 +48,8 @@ pub enum XtaskCmd {
     Test(Test),
     Build(Build),
     Add(Add),
+    Coverage(Coverage),
+    Publish(Publish),
 }
 
 #[derive(Debug)]
@@ -53,6 +66,15 @@ pub struct Build {}
 #[derive(Debug)]
 pub struct Add {
     pub name: String,
+}
+
+#[derive(Debug)]
+pub struct Coverage {}
+
+#[derive(Debug)]
+pub struct Publish {
+    pub execute: bool,
+    pub level: Option<String>,
 }
 
 #[allow(dead_code)]

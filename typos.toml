@@ -1,0 +1,15 @@
+# Typos linter config. Run `typos` to check, `typos -w` to fix.
+# Docs: https://github.com/crate-ci/typos
+
+[default]
+extend-ignore-re = [
+    # Hex-like identifiers (commit shas, content hashes).
+    "[A-Fa-f0-9]{7,}",
+]
+
+[files]
+extend-exclude = [
+    "CHANGELOG.md",
+    "Cargo.lock",
+    "*.snap",
+]
