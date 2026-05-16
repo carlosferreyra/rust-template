@@ -10,6 +10,7 @@ extend-ignore-re = [
 [default.extend-words]
 # Tool names that typos doesn't know.
 clippy = "clippy"
+rhai = "rhai"
 
 [files]
 extend-exclude = [
