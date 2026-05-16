@@ -8,25 +8,38 @@
 // system::command returns stdout as a String and throws on non-zero exit.
 let license_id = variable::get("license");
 let author = variable::get("author_name");
-// .trim() is not chainable in this Rhai version — assign first, then strip newline.
 let current_year = system::command("date", ["+%Y"]);
-current_year = current_year.replace("\n", "");
+
+// Write a small Python script to a temp file and run it via uv.
+// This avoids quoting/escaping issues with sh -c pipelines that contain
+// spaces in author names or brackets in sed patterns.
+let py = `
+import json, subprocess, sys
+result = subprocess.run(
+    ["gh", "api", f"licenses/${license_id}", "--jq", ".body"],
+    capture_output=True, text=True
+)
+if result.returncode != 0:
+    sys.exit(result.returncode)
+text = result.stdout
+year = "${current_year}".strip()
+author = """${author}"""
+text = text.replace("[year]", year).replace("[fullname]", author)
+text = text.replace("[name of copyright owner]", author)
+text = text.replace("<year>", year).replace("<name of author>", author)
+print(text, end="")
+`;
+file::write("_fetch_license.py", py);
 
 try {
-    // Fetch via shell so we can pipe through sed for substitutions —
-    // Rhai's String::replace returns () on ImmutableString in this version.
-    // GitHub license templates use two placeholder conventions:
-    //   [bracket] style — MIT, BSD-2, BSD-3
-    //   <angle>   style — AGPL-3.0, GPL-2.0, GPL-3.0, LGPL-2.1
-    let cmd = `gh api licenses/${license_id} --jq .body | sed 's/\\[year\\]/${current_year}/g' | sed 's/\\[fullname\\]/${author}/g' | sed 's/\\[name of copyright owner\\]/${author}/g' | sed 's/<year>/${current_year}/g' | sed 's/<name of author>/${author}/g'`;
-    let text = system::command("sh", ["-c", cmd]);
-
+    let text = system::command("uv", ["run", "--no-project", "_fetch_license.py"]);
     file::write("LICENSE", text);
     print(`✓  LICENSE (${license_id}) written.`);
 } catch(e) {
     print(`⚠  Could not fetch license '${license_id}' from GitHub API: ${e}`);
     print(`   Run manually: gh api licenses/${license_id} --jq .body > LICENSE`);
 }
+system::command("sh", ["-c", "rm -f _fetch_license.py"]);
 
 // ---------------------------------------------------------------------------
 // Next-step instructions
