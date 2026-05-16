@@ -1,8 +1,8 @@
 //! Integration test for the façade crate.
 //!
-//! Lives in `tests/` so it consumes `{{project-name}}` as an external crate — the
-//! same way a downstream user would. Uses `insta` for snapshot assertions; run
-//! `cargo insta review` to update.
+//! Lives in `tests/it/` so it consumes `{{project-name}}` as an external crate —
+//! the same way a downstream user would. Uses `insta` for snapshot assertions;
+//! run `cargo insta review` to update.
 
 use {{crate_name}}::greet;
 
