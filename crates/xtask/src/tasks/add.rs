@@ -56,7 +56,10 @@ pub fn add(cmd: Add) {
     fs::create_dir_all(dir.join("src"))
         .unwrap_or_else(|e| panic!("failed to create crates/{crate_name}/src: {e}"));
 
-    let fields = workspace_inheritable_fields();
+    let fields: Vec<&str> = workspace_inheritable_fields()
+        .into_iter()
+        .filter(|&f| f != "description")
+        .collect();
     let max_len = fields.iter().map(|f| f.len()).max().unwrap_or(0);
     let inherited: String = fields
         .iter()
