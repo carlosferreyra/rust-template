@@ -20,7 +20,7 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: moonrepo/setup-rust@v1
         with:
           inherit-toolchain: true
@@ -30,7 +30,7 @@ jobs:
   clippy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: moonrepo/setup-rust@v1
         with:
           inherit-toolchain: true
@@ -46,7 +46,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: moonrepo/setup-rust@v1
         with:
           inherit-toolchain: true
@@ -60,7 +60,7 @@ jobs:
   msrv:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-msrv
@@ -73,7 +73,7 @@ jobs:
     env:
       RUSTDOCFLAGS: -D warnings
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: moonrepo/setup-rust@v1
         with:
           inherit-toolchain: true
@@ -83,7 +83,7 @@ jobs:
   deny:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: EmbarkStudios/cargo-deny-action@v2
         with:
           command: check
@@ -91,14 +91,14 @@ jobs:
   typos:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: crate-ci/typos@master
 
   semver:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: obi1kenobi/cargo-semver-checks-action@v2
         with:
           exclude: "xtask,{{project-name}}-cli"
