@@ -31,6 +31,9 @@ xflags::xflags! {
             /// Bump level: patch | minor | major.
             optional --level level: String
         }
+
+        /// Regenerate per-crate README.md files (runs scripts/generate-crate-readmes.py).
+        cmd readme {}
     }
 }
 
@@ -50,6 +53,7 @@ pub enum XtaskCmd {
     Add(Add),
     Coverage(Coverage),
     Publish(Publish),
+    Readme(Readme),
 }
 
 #[derive(Debug)]
@@ -76,6 +80,9 @@ pub struct Publish {
     pub execute: bool,
     pub level: Option<String>,
 }
+
+#[derive(Debug)]
+pub struct Readme {}
 
 #[allow(dead_code)]
 impl Xtask {

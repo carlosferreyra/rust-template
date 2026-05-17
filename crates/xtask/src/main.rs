@@ -13,5 +13,6 @@ fn main() {
         flags::XtaskCmd::Add(cmd) => tasks::add(cmd),
         flags::XtaskCmd::Coverage(_) => tasks::coverage(),
         flags::XtaskCmd::Publish(cmd) => tasks::publish(cmd),
+        flags::XtaskCmd::Readme(_) => tasks::readme(),
     }
 }

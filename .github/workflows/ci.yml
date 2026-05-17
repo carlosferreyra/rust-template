@@ -36,6 +36,9 @@ jobs:
           inherit-toolchain: true
           components: clippy
       - uses: Swatinem/rust-cache@v2
+      - uses: astral-sh/setup-uv@v5
+      - name: Install mold
+        run: uv run scripts/install-mold.py
       - run: cargo clippy --workspace --all-targets -- -D warnings
 
   test:
@@ -54,6 +57,11 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-nextest
+      - uses: astral-sh/setup-uv@v5
+        if: runner.os == 'Linux'
+      - name: Install mold
+        if: runner.os == 'Linux'
+        run: uv run scripts/install-mold.py
       - run: cargo nextest run --workspace --profile ci
       - run: cargo test --workspace --doc
 

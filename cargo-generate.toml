@@ -7,13 +7,13 @@ cargo_generate_version = ">=0.21.0"
 ignore = [
     "cargo-generate.toml.bak",
     "TEMPLATE.md",
+    "PLAN.md",
     "release.toml",
     "dist-workspace.toml",
     "cliff.toml",
     ".github/workflows/release.yml",
     "LICENSE",
     ".claude",
-    "scripts",
 ]
 
 exclude = [
