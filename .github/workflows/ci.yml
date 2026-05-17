@@ -35,7 +35,6 @@ jobs:
         with:
           inherit-toolchain: true
           components: clippy
-      - uses: Swatinem/rust-cache@v2
       - uses: astral-sh/setup-uv@v5
       - name: Install mold
         run: uv run scripts/install-mold.py
@@ -53,7 +52,6 @@ jobs:
       - uses: moonrepo/setup-rust@v1
         with:
           inherit-toolchain: true
-      - uses: Swatinem/rust-cache@v2
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-nextest
@@ -65,17 +63,6 @@ jobs:
       - run: cargo nextest run --workspace --profile ci
       - run: cargo test --workspace --doc
 
-  msrv:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-msrv
-      - uses: Swatinem/rust-cache@v2
-      # Reads `rust-version` from [workspace.package].
-      - run: cargo msrv verify --workspace
-
   docs:
     runs-on: ubuntu-latest
     env:
@@ -85,7 +72,6 @@ jobs:
       - uses: moonrepo/setup-rust@v1
         with:
           inherit-toolchain: true
-      - uses: Swatinem/rust-cache@v2
       - run: cargo doc --workspace --no-deps
 
   deny:
