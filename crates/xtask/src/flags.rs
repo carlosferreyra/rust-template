@@ -15,9 +15,9 @@ xflags::xflags! {
         /// Run test then build release artifacts and smoke-test the binary.
         cmd build {}
 
-        /// Scaffold a new crate under crates/{{project-name}}-<name>.
+        /// Scaffold a library crate; the reserved name `cli` adds the project CLI.
         cmd add {
-            /// Name suffix for the new crate (e.g. `http` → `{{project-name}}-http`).
+            /// Crate suffix, or `cli` for the uv-style CLI scaffold.
             required name: String
         }
 

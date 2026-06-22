@@ -3,7 +3,14 @@ use std::process::Command;
 pub fn check() {
     run(&["fmt", "--all", "--check"]);
     run(&["check", "--workspace"]);
-    run(&["clippy", "--workspace"]);
+    run(&[
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings",
+    ]);
 }
 
 pub(crate) fn run(args: &[&str]) {

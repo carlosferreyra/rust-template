@@ -18,6 +18,10 @@ cargo xtask add <name>
 Creates `crates/{{project-name}}-<name>/` with a `Cargo.toml` and `src/lib.rs`, inheriting all
 workspace fields, and appends a stub section to `crates/README.md`.
 
+The exact name `cli` is reserved. `cargo xtask add cli` creates the unpublished
+`{{project-name}}-cli` Clap model and adds the executable entrypoint to the public
+`{{project-name}}` crate.
+
 ## Commit conventions
 
 Commits must follow [Conventional Commits](https://www.conventionalcommits.org/):
@@ -41,8 +45,8 @@ chore(deps): bump xflags to 0.4
 ## Releasing
 
 ```sh
-cargo release patch --execute
+cargo xtask publish --execute --level patch
 ```
 
-This bumps the version, updates `CHANGELOG.md` via git-cliff, commits, tags, and pushes.
-cargo-dist picks up the tag and publishes GitHub Release artifacts automatically.
+This prepares the version, changelog, commit, and tag without publishing locally.
+The trusted GitHub release workflow publishes crates and release artifacts.

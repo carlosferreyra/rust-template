@@ -19,10 +19,10 @@ ignore = [
 exclude = [
     "hooks/pre-generate.rhai",
     "hooks/post-generate.rhai",
+    "crates/xtask/src/tasks/add.rs",
 ]
 
 [hooks]
-pre  = ["hooks/pre-generate.rhai"]
 post = ["hooks/post-generate.rhai"]
 
 [placeholders.github_username]
@@ -42,11 +42,6 @@ prompt = "Author email"
 type    = "string"
 prompt  = "One-line description (optional)"
 default = ""
-
-[placeholders.include_cli]
-type    = "bool"
-prompt  = "Include a CLI binary crate?"
-default = true
 
 [placeholders.license]
 type    = "string"

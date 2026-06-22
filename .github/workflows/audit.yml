@@ -11,6 +11,7 @@ on:
 
 jobs:
   audit:
+    if: github.repository != 'carlosferreyra/rust-template'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

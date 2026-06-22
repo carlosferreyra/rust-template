@@ -17,7 +17,22 @@ env:
   RUST_BACKTRACE: short
 
 jobs:
+  template:
+    if: github.repository == 'carlosferreyra/rust-template'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: moonrepo/setup-rust@v1
+        with:
+          inherit-toolchain: true
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-generate,cargo-nextest
+      - uses: astral-sh/setup-uv@v5
+      - run: bash scripts/test-template.sh
+
   format:
+    if: github.repository != 'carlosferreyra/rust-template'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,6 +43,7 @@ jobs:
       - run: cargo fmt --all --check
 
   clippy:
+    if: github.repository != 'carlosferreyra/rust-template'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,6 +57,7 @@ jobs:
       - run: cargo clippy --workspace --all-targets -- -D warnings
 
   test:
+    if: github.repository != 'carlosferreyra/rust-template'
     name: test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
@@ -64,6 +81,7 @@ jobs:
       - run: cargo test --workspace --doc
 
   docs:
+    if: github.repository != 'carlosferreyra/rust-template'
     runs-on: ubuntu-latest
     env:
       RUSTDOCFLAGS: -D warnings
@@ -74,7 +92,18 @@ jobs:
           inherit-toolchain: true
       - run: cargo doc --workspace --no-deps
 
+  msrv:
+    if: github.repository != 'carlosferreyra/rust-template'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: moonrepo/setup-rust@v1
+        with:
+          channel: "1.85"
+      - run: cargo check --workspace --all-targets
+
   deny:
+    if: github.repository != 'carlosferreyra/rust-template'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -83,6 +112,7 @@ jobs:
           command: check
 
   typos:
+    if: github.repository != 'carlosferreyra/rust-template'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -1,4 +1,4 @@
-//! Top-level façade for `{{project-name}}`.
+//! Public library for `{{project-name}}`.
 //!
 //! TODO: replace this paragraph with a one-sentence summary of what the crate
 //! does, who it is for, and what problem it solves.
@@ -10,10 +10,7 @@
 //! # Examples
 //!
 //! ```
-//! use {{crate_name}}::greet;
-//!
-//! let msg = greet("world").unwrap();
-//! assert_eq!(msg, "Hello, world!");
+//! assert_eq!({{crate_name}}::hello(), "Hello from {{project-name}}!");
 //! ```
 //!
 //! # Feature flags
@@ -29,8 +26,8 @@
 //! #![doc = include_str!("../README.md")]
 //! ```
 
-pub use {{crate_name}}_core as core;
-pub use {{crate_name}}_types as types;
-
-pub use {{crate_name}}_core::greet;
-pub use {{crate_name}}_types::{Error, Result};
+/// Returns a starter message.
+#[must_use]
+pub const fn hello() -> &'static str {
+    "Hello from {{project-name}}!"
+}

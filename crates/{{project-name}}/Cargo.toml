@@ -16,8 +16,6 @@ categories.workspace   = true
 workspace = true
 
 [dependencies]
-{{project-name}}-core  = { workspace = true }
-{{project-name}}-types = { workspace = true }
 tracing                = { workspace = true }
 
 [dev-dependencies]

@@ -7,9 +7,7 @@ resolver = "3"
 # release on each `Cargo.lock` regeneration. Dependabot bumps majors when they ship.
 [workspace.dependencies]
 # Inter-workspace crates: path for local dev, version for crates.io publish.
-{{project-name}}       = { path = "crates/{{project-name}}", version = "0.0.0" }
-{{project-name}}-core  = { path = "crates/{{project-name}}-core", version = "0.0.0" }
-{{project-name}}-types = { path = "crates/{{project-name}}-types", version = "0.0.0" }
+{{project-name}} = { path = "crates/{{project-name}}", version = "0.0.0" }
 
 # Errors
 thiserror = "2"
@@ -22,9 +20,8 @@ tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 # CLI
 clap = { version = "4", features = ["derive"] }
 
-# Test / bench
-insta     = "1"
-criterion = { version = "0.5", default-features = false }
+# Test
+insta = "1"
 
 # Inherited by each crate via `field.workspace = true`.
 # `rust-version` is the MSRV published to crates.io — independent from

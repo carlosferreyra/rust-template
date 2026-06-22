@@ -3,7 +3,7 @@ use std::process::Command;
 
 pub fn publish(cmd: Publish) {
     let level = cmd.level.as_deref().unwrap_or("patch");
-    let mut args = vec!["release", level, "--workspace"];
+    let mut args = vec!["release", level, "--workspace", "--no-publish"];
     if cmd.execute {
         args.push("--execute");
     }

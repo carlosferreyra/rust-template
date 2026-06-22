@@ -148,14 +148,6 @@ def parse_github_owner_repo(workspace_package: dict[str, object]) -> tuple[str, 
     return owner, name
 
 
-def workspace_package_name(workspace_package: dict[str, object]) -> str:
-    """Best-effort workspace name for the User-Agent string."""
-    name = workspace_package.get("name")
-    if isinstance(name, str) and name:
-        return name
-    return "rust-workspace"
-
-
 def publish_placeholder_crate(
     crate_name: str,
     workspace_package: dict[str, object],
@@ -340,7 +332,7 @@ def main() -> None:
 
     workspace_package = load_workspace_package_metadata()
     owner, repo = parse_github_owner_repo(workspace_package)
-    facade_crate = workspace_package_name(workspace_package)
+    facade_crate = repo
     user_agent = f"{facade_crate}-crates-io-publish-setup (github.com/{owner}/{repo})"
 
     crates = get_publishable_crates()
