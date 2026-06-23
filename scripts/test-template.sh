@@ -24,8 +24,13 @@ test -d crates/xtask
 test ! -e crates/smoke-project-core
 test ! -e crates/smoke-project-cli
 test -f .cargo/config.toml
-rg '^xtask = "run --package xtask --"$' .cargo/config.toml
-if rg '\{\{[^}]+\}\}' --glob '!Cargo.lock' --glob '!crates/xtask/src/tasks/add.rs'; then
+grep -Eq '^xtask = "run --package xtask --"$' .cargo/config.toml
+placeholder_matches=$(find . -type f \
+  ! -path './Cargo.lock' \
+  ! -path './crates/xtask/src/tasks/add.rs' \
+  -exec grep -EH '\{\{[^}]+\}\}' {} + | grep -Ev '\$\{\{' || true)
+if [ -n "$placeholder_matches" ]; then
+  printf '%s\n' "$placeholder_matches"
   echo "unresolved template placeholder found" >&2
   exit 1
 fi
