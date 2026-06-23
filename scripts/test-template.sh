@@ -23,6 +23,8 @@ test -d crates/smoke-project
 test -d crates/xtask
 test ! -e crates/smoke-project-core
 test ! -e crates/smoke-project-cli
+test -f .cargo/config.toml
+rg '^xtask = "run --package xtask --"$' .cargo/config.toml
 if rg '\{\{[^}]+\}\}' --glob '!Cargo.lock' --glob '!crates/xtask/src/tasks/add.rs'; then
   echo "unresolved template placeholder found" >&2
   exit 1
