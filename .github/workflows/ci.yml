@@ -21,21 +21,21 @@ jobs:
     if: github.repository == 'carlosferreyra/rust-template'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: moonrepo/setup-rust@v1
         with:
           inherit-toolchain: true
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-generate,cargo-nextest
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v7
       - run: bash scripts/test-template.sh
 
   format:
     if: github.repository != 'carlosferreyra/rust-template'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: moonrepo/setup-rust@v1
         with:
           inherit-toolchain: true
@@ -46,12 +46,12 @@ jobs:
     if: github.repository != 'carlosferreyra/rust-template'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: moonrepo/setup-rust@v1
         with:
           inherit-toolchain: true
           components: clippy
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v7
       - name: Install mold
         run: uv run scripts/install-mold.py
       - run: cargo clippy --workspace --all-targets -- -D warnings
@@ -65,14 +65,14 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: moonrepo/setup-rust@v1
         with:
           inherit-toolchain: true
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-nextest
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v7
         if: runner.os == 'Linux'
       - name: Install mold
         if: runner.os == 'Linux'
@@ -86,7 +86,7 @@ jobs:
     env:
       RUSTDOCFLAGS: -D warnings
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: moonrepo/setup-rust@v1
         with:
           inherit-toolchain: true
@@ -96,7 +96,7 @@ jobs:
     if: github.repository != 'carlosferreyra/rust-template'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: moonrepo/setup-rust@v1
         with:
           channel: "1.85"
@@ -106,7 +106,7 @@ jobs:
     if: github.repository != 'carlosferreyra/rust-template'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: EmbarkStudios/cargo-deny-action@v2
         with:
           command: check
@@ -115,5 +115,5 @@ jobs:
     if: github.repository != 'carlosferreyra/rust-template'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: crate-ci/typos@master
