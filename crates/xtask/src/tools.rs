@@ -70,6 +70,8 @@ impl Tool {
 
     const fn prefix(self) -> &'static [&'static str] {
         match self {
+            Self::Nextest => &["nextest"],
+            Self::Coverage => &["llvm-cov"],
             Self::Release => &["release"],
             _ => &[],
         }

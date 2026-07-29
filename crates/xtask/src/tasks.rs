@@ -66,11 +66,7 @@ pub fn ci(workspace: &Workspace, full: bool) -> Result {
 }
 
 pub fn coverage(workspace: &Workspace) -> Result {
-    tools::execute(
-        workspace,
-        Tool::Coverage,
-        ["llvm-cov", "--workspace", "--html"],
-    )
+    tools::execute(workspace, Tool::Coverage, ["--workspace", "--html"])
 }
 
 fn cargo<I, S>(workspace: &Workspace, args: I) -> Result
