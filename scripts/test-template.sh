@@ -7,7 +7,7 @@ trap 'rm -rf "$destination"' EXIT
 
 cargo generate \
   --path "$template_root" \
-  --name smoke-project \
+  --name test \
   --destination "$destination" \
   --allow-commands \
   --define github_username=smoke-user \
@@ -16,13 +16,13 @@ cargo generate \
   --define project_description="Generated smoke test" \
   --define license=MIT
 
-project="$destination/smoke-project"
+project="$destination/test"
 cd "$project"
 
-test -d crates/smoke-project
+test -d crates/test
 test -d crates/xtask
-test ! -e crates/smoke-project-core
-test ! -e crates/smoke-project-cli
+test ! -e crates/test-core
+test ! -e crates/test-cli
 test ! -e .github
 test ! -e .config
 test ! -e scripts
@@ -62,13 +62,13 @@ fi
 # Added dependency versions follow the current workspace version.
 perl -pi -e 's/version      = "0\.0\.0"/version      = "1.2.3"/' Cargo.toml
 cargo xtask scaffold crate core
-grep -Fq 'smoke-project-core = { path = "crates/smoke-project-core", version = "1.2.3" }' Cargo.toml
+grep -Fq 'test-core = { path = "crates/test-core", version = "1.2.3" }' Cargo.toml
 cargo xtask check
 
 # Adding a CLI must not overwrite an established public library.
-cp crates/smoke-project/src/lib.rs "$destination/public-lib-before.rs"
+cp crates/test/src/lib.rs "$destination/public-lib-before.rs"
 cargo xtask scaffold cli
-cmp crates/smoke-project/src/lib.rs "$destination/public-lib-before.rs"
+cmp crates/test/src/lib.rs "$destination/public-lib-before.rs"
 cargo xtask check
 cargo run -- --version
 cargo run -- hello smoke
@@ -93,7 +93,7 @@ test -f CLAUDE.md
 
 # Dry runs report changes without writing them.
 cargo xtask scaffold crate dry-run-only --dry-run
-test ! -e crates/smoke-project-dry-run-only
+test ! -e crates/test-dry-run-only
 
 before=$(git status --porcelain=v1)
 if cargo xtask scaffold crate Invalid_Name; then

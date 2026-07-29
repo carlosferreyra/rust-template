@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use toml_edit::{Array, DocumentMut, InlineTable, Item, Value, value};
+use toml_edit::{Array, ArrayOfTables, DocumentMut, InlineTable, Item, Table, Value, value};
 
 use crate::Result;
 use crate::cli::{CiPreset, ScaffoldCommand};
@@ -132,6 +132,7 @@ fn add_cli(workspace: &Workspace, dry_run: bool) -> Result {
     let project_manifest_path = PathBuf::from("crates").join(project).join("Cargo.toml");
     let mut project_manifest = read_document(&workspace.path(&project_manifest_path))?;
     project_manifest["package"]["default-run"] = value(project);
+    disable_binary_harness(&mut project_manifest, project)?;
     insert_inline_dependency(
         &mut project_manifest["dependencies"],
         &cli_name,
@@ -235,6 +236,34 @@ fn register_workspace_crate(
         crate_name,
         path_dependency(&path, version),
     )
+}
+
+fn disable_binary_harness(document: &mut DocumentMut, project: &str) -> Result {
+    let mut target = Table::new();
+    target["name"] = value(project);
+    target["path"] = value(format!("src/bin/{project}.rs"));
+    target["test"] = value(false);
+    target["harness"] = value(false);
+
+    if let Some(item) = document.get_mut("bin") {
+        let binaries = item
+            .as_array_of_tables_mut()
+            .ok_or("the public crate's bin entry is not an array of tables")?;
+        if let Some(existing) = binaries
+            .iter_mut()
+            .find(|binary| binary.get("name").and_then(Item::as_str) == Some(project))
+        {
+            existing["test"] = value(false);
+            existing["harness"] = value(false);
+        } else {
+            binaries.push(target);
+        }
+    } else {
+        let mut binaries = ArrayOfTables::new();
+        binaries.push(target);
+        document["bin"] = Item::ArrayOfTables(binaries);
+    }
+    Ok(())
 }
 
 fn insert_inline_dependency(table: &mut Item, name: &str, dependency: InlineTable) -> Result {
