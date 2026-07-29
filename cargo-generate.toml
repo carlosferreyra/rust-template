@@ -8,10 +8,26 @@ ignore = [
     "cargo-generate.toml.bak",
     "TEMPLATE.md",
     "PLAN.md",
+    "CONTEXT.md",
+    "CONTRIBUTING.md",
+    "CHANGELOG.md",
     "release.toml",
     "dist-workspace.toml",
     "cliff.toml",
-    ".github/workflows/release.yml",
+    ".cargo-dist",
+    ".config",
+    ".editorconfig",
+    ".github",
+    ".prettierignore",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "clippy.toml",
+    "crates/README.md",
+    "deny.toml",
+    "examples",
+    "rustfmt.toml",
+    "scripts",
+    "typos.toml",
     "LICENSE",
     ".claude",
 ]
@@ -19,7 +35,7 @@ ignore = [
 exclude = [
     "hooks/pre-generate.rhai",
     "hooks/post-generate.rhai",
-    "crates/xtask/src/tasks/add.rs",
+    "crates/xtask/src/scaffold.rs",
 ]
 
 [hooks]
@@ -45,6 +61,6 @@ default = ""
 
 [placeholders.license]
 type    = "string"
-prompt  = "SPDX license identifier (MIT, Apache-2.0, GPL-3.0, …)"
-default = "mit"
-regex   = "^(agpl-3\\.0|apache-2\\.0|bsd-2-clause|bsd-3-clause|bsl-1\\.0|cc0-1\\.0|epl-2\\.0|gpl-2\\.0|gpl-3\\.0|lgpl-2\\.1|mit|mpl-2\\.0|unlicense)$"
+prompt  = "SPDX license identifier (MIT, Apache-2.0, GPL-3.0-only, …)"
+default = "MIT"
+regex   = "^(AGPL-3\\.0-only|Apache-2\\.0|BSD-2-Clause|BSD-3-Clause|BSL-1\\.0|CC0-1\\.0|EPL-2\\.0|GPL-2\\.0-only|GPL-3\\.0-only|LGPL-2\\.1-only|MIT|MPL-2\\.0|Unlicense)$"

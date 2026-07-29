@@ -14,13 +14,3 @@ categories.workspace   = true
 
 [lints]
 workspace = true
-
-[dependencies]
-tracing                = { workspace = true }
-
-[dev-dependencies]
-insta = { workspace = true }
-
-[[test]]
-name = "integration"
-path = "tests/it/integration.rs"

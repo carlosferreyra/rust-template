@@ -10,5 +10,5 @@ name = "xtask"
 path = "src/main.rs"
 
 [dependencies]
-xflags = "0.3"
-toml   = { version = "0.8", default-features = false, features = ["parse"] }
+clap      = { version = "4", features = ["derive"] }
+toml_edit = "0.22"
