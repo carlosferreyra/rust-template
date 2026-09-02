@@ -23,8 +23,11 @@ fn run(cli: Cli) -> Result {
         Command::Ci(args) => tasks::ci(&workspace, args.full),
         Command::Coverage => tasks::coverage(&workspace),
         Command::Scaffold { command, dry_run } => scaffold::run(&workspace, command, dry_run),
-        Command::Doctor => tools::doctor(&workspace),
-        Command::Tools { command } => tools::run(&workspace, command),
+        Command::Doctor => {
+            tools::doctor(&workspace);
+            Ok(())
+        }
+        Command::Tools { command } => tools::run(&workspace, &command),
         Command::Release { command } => release::run(&workspace, command),
     }
 }

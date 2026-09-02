@@ -3,13 +3,13 @@ use clap::{Args, Parser, Subcommand, ValueEnum};
 /// Develop and grow this workspace.
 #[derive(Debug, Parser)]
 #[command(name = "xtask", version, propagate_version = true)]
-pub struct Cli {
+pub(crate) struct Cli {
     #[command(subcommand)]
-    pub command: Command,
+    pub(crate) command: Command,
 }
 
 #[derive(Debug, Subcommand)]
-pub enum Command {
+pub(crate) enum Command {
     /// Check formatting, compilation, and lints.
     Check,
     /// Check the workspace, then run its tests.
@@ -43,27 +43,27 @@ pub enum Command {
 }
 
 #[derive(Debug, Args)]
-pub struct TestArgs {
+pub(crate) struct TestArgs {
     /// Optional test-name filter.
-    pub filter: Option<String>,
+    pub(crate) filter: Option<String>,
     /// Use cargo-nextest instead of Cargo's built-in test runner.
     #[arg(long)]
-    pub nextest: bool,
+    pub(crate) nextest: bool,
 }
 
 #[derive(Debug, Args)]
-pub struct CiArgs {
+pub(crate) struct CiArgs {
     /// Also run documentation, dependency-policy, and typo checks.
     #[arg(long)]
-    pub full: bool,
+    pub(crate) full: bool,
 }
 
 #[derive(Debug, Subcommand)]
-pub enum ScaffoldCommand {
+pub(crate) enum ScaffoldCommand {
     /// Add a library or binary crate.
     Crate {
-        /// Suffix appended to the public crate name.
-        name: String,
+        /// Stable domain or operational noun appended to the crate prefix.
+        semantic_name: String,
         /// Generate a binary instead of a library.
         #[arg(long)]
         bin: bool,
@@ -72,7 +72,11 @@ pub enum ScaffoldCommand {
         private: bool,
     },
     /// Add a Clap model crate and executable entrypoint.
-    Cli,
+    Cli {
+        /// Choose where the executable target lives.
+        #[arg(long, value_enum, default_value_t)]
+        entrypoint: CliEntrypoint,
+    },
     /// Add a GitHub Actions workflow.
     Ci {
         /// Lean uses Cargo only; full also enables policy and typo checks.
@@ -89,15 +93,25 @@ pub enum ScaffoldCommand {
     },
 }
 
+/// Location of the executable target created by the CLI scaffold.
 #[derive(Clone, Copy, Debug, Default, ValueEnum)]
-pub enum CiPreset {
+pub(crate) enum CliEntrypoint {
+    /// Keep the primary library free of command-line dependencies.
+    #[default]
+    Companion,
+    /// Add a thin executable wrapper to the primary crate.
+    Primary,
+}
+
+#[derive(Clone, Copy, Debug, Default, ValueEnum)]
+pub(crate) enum CiPreset {
     #[default]
     Lean,
     Full,
 }
 
 #[derive(Debug, Subcommand)]
-pub enum ToolsCommand {
+pub(crate) enum ToolsCommand {
     /// Install an exact tool group under .xtask/tools.
     Sync {
         #[arg(value_enum, default_value_t)]
@@ -106,7 +120,7 @@ pub enum ToolsCommand {
 }
 
 #[derive(Clone, Copy, Debug, Default, ValueEnum)]
-pub enum ToolGroup {
+pub(crate) enum ToolGroup {
     Ci,
     Coverage,
     Release,
@@ -116,7 +130,7 @@ pub enum ToolGroup {
 }
 
 #[derive(Debug, Subcommand)]
-pub enum ReleaseCommand {
+pub(crate) enum ReleaseCommand {
     /// Create release configuration and initialize dist for binary projects.
     Init,
     /// Ask dist to preview the release plan.
@@ -141,7 +155,7 @@ pub enum ReleaseCommand {
 }
 
 #[derive(Clone, Copy, Debug, Default, ValueEnum)]
-pub enum ReleaseLevel {
+pub(crate) enum ReleaseLevel {
     #[default]
     Patch,
     Minor,
@@ -149,7 +163,7 @@ pub enum ReleaseLevel {
 }
 
 impl ReleaseLevel {
-    pub const fn as_str(self) -> &'static str {
+    pub(crate) const fn as_str(self) -> &'static str {
         match self {
             Self::Patch => "patch",
             Self::Minor => "minor",

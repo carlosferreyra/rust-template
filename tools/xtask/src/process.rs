@@ -4,7 +4,7 @@ use std::process::{Command, Stdio};
 
 use crate::Result;
 
-pub fn run<I, S>(directory: &Path, program: impl AsRef<OsStr>, args: I) -> Result
+pub(crate) fn run<I, S>(directory: &Path, program: impl AsRef<OsStr>, args: I) -> Result
 where
     I: IntoIterator<Item = S>,
     S: AsRef<OsStr>,
@@ -12,7 +12,7 @@ where
     run_with_path(directory, program, args, None)
 }
 
-pub fn run_with_path<I, S>(
+pub(crate) fn run_with_path<I, S>(
     directory: &Path,
     program: impl AsRef<OsStr>,
     args: I,
@@ -57,7 +57,7 @@ where
     }
 }
 
-pub fn available(program: &OsStr, prefix: &[&str]) -> bool {
+pub(crate) fn available(program: &OsStr, prefix: &[&str]) -> bool {
     Command::new(program)
         .args(prefix)
         .arg("--version")
@@ -68,7 +68,7 @@ pub fn available(program: &OsStr, prefix: &[&str]) -> bool {
         .is_ok_and(|status| status.success())
 }
 
-pub fn available_version(program: &OsStr, prefix: &[&str], version: &str) -> bool {
+pub(crate) fn available_version(program: &OsStr, prefix: &[&str], version: &str) -> bool {
     Command::new(program)
         .args(prefix)
         .arg("--version")

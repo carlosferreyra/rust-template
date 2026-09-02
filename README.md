@@ -2,4 +2,82 @@
 
 > {{project_description}}
 
-Run `cargo xtask --help` to develop the workspace or add optional capabilities.
+This is a minimal Cargo workspace. It starts with one dependency-free primary
+crate and private repository automation; it does not assume a domain structure
+for you.
+
+## Develop
+
+```sh
+cargo xtask check
+cargo xtask test
+cargo xtask build
+cargo xtask --help
+```
+
+## Grow the workspace
+
+Use project-prefixed semantic crate names, inspired by uv's ownership model:
+
+```sh
+cargo xtask scaffold crate workspace
+cargo xtask scaffold crate resolver
+cargo xtask scaffold crate client --private
+```
+
+Those examples are illustrative. Choose a noun from your own domain; do not
+copy uv's Python-specific crate names.
+
+Avoid generic buckets such as `core`, `common`, `shared`, `utils`, and `misc`.
+A CLI command or a Cargo feature is not automatically a crate either. Keep
+behavior inside the primary crate first, then extract a crate when it owns a
+coherent responsibility, gives callers a smaller interface than its
+implementation, and improves locality for changes and tests.
+
+Use `types` only for a shared vocabulary or trait that prevents a real
+dependency cycle. Use `dispatch` only when multiple domain modules need a
+dedicated orchestration module. One adapter is a hypothetical seam; introduce
+an adapter seam when behavior actually varies.
+
+An application can eventually grow toward this shape without pre-generating it:
+
+```text
+{{project-name}}                 # entry/composition package
+├── {{project-name}}-cli         # command grammar and parsing
+├── {{project-name}}-workspace   # workspace model
+├── {{project-name}}-resolver    # domain behavior
+└── {{project-name}}-client      # external adapter
+```
+
+The entry/composition package may depend on many product crates. Domain crates
+must not depend on the entrypoint or CLI. When one product crate depends on
+another, declare it once under root `[workspace.dependencies]` and use
+`{ workspace = true }` from the member manifest. Dependencies used only by
+`xtask` stay in `tools/xtask/Cargo.toml`.
+
+## Add a CLI
+
+```sh
+# Keep a public library independent of Clap. This is the default.
+cargo xtask scaffold cli --entrypoint companion
+
+# Use the primary crate as an uv-like application composition package.
+cargo xtask scaffold cli --entrypoint primary
+```
+
+Both modes create `{{project-name}}-cli` for the command model. The companion
+mode owns the executable in that private package; the primary mode adds a thin
+binary wrapper to the primary package.
+
+## More capabilities
+
+```sh
+cargo xtask scaffold ci
+cargo xtask scaffold docs
+cargo xtask scaffold agents --claude
+cargo xtask scaffold crate <semantic-name> --dry-run
+```
+
+Scaffolds are explicit, idempotent, and refuse to overwrite unmarked
+user-owned files. Generated projects are snapshots: template updates are not
+applied automatically.

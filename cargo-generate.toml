@@ -6,6 +6,8 @@ cargo_generate_version = ">=0.21.0"
 # directly before generation. They are excluded from liquid processing only via `exclude`.
 ignore = [
     "cargo-generate.toml.bak",
+    "REFACTOR.md",
+    "docs",
     "TEMPLATE.md",
     "PLAN.md",
     "CONTEXT.md",
@@ -35,7 +37,8 @@ ignore = [
 exclude = [
     "hooks/pre-generate.rhai",
     "hooks/post-generate.rhai",
-    "crates/xtask/src/scaffold.rs",
+    "tools/xtask/src/scaffold",
+    "tools/xtask/assets",
 ]
 
 [hooks]

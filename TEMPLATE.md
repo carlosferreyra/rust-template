@@ -9,16 +9,17 @@ grow through `cargo xtask`.
 cargo generate --git https://github.com/carlosferreyra/rust-template --allow-commands
 ```
 
-The initial project contains one dependency-free public crate, `xtask`, and only
-the files needed to build them. CI, release automation, contribution guides,
-agent instructions, extra crates, and a CLI are opt-in.
+The initial project contains one dependency-free primary crate and private
+`tools/xtask` automation. CI, release automation, contribution guides, agent
+instructions, extra crates, and a CLI are opt-in. The generated `README.md`
+teaches the ownership and extraction rules for product crates.
 
 ## Grow the workspace
 
 ```sh
-cargo xtask scaffold crate core
-cargo xtask scaffold crate worker --bin --private
-cargo xtask scaffold cli
+cargo xtask scaffold crate workspace
+cargo xtask scaffold crate resolver --private
+cargo xtask scaffold cli --entrypoint companion
 cargo xtask scaffold ci
 cargo xtask scaffold ci --preset full
 cargo xtask scaffold docs
@@ -26,8 +27,9 @@ cargo xtask scaffold agents --claude
 ```
 
 Scaffolds plan all changes before writing, preserve user-owned files, support
-`--dry-run`, and are idempotent. `core` and `types` remain ordinary names rather
-than mandatory architecture layers.
+`--dry-run`, and are idempotent. Product crates use the project prefix plus a
+semantic ownership noun; they are never pre-generated as a mandatory layer
+stack.
 
 ## Develop
 

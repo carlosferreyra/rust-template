@@ -7,7 +7,7 @@ use crate::process;
 use crate::workspace::Workspace;
 
 #[derive(Clone, Copy, Debug)]
-pub enum Tool {
+pub(crate) enum Tool {
     Nextest,
     Coverage,
     Deny,
@@ -78,13 +78,13 @@ impl Tool {
     }
 }
 
-pub fn run(workspace: &Workspace, command: ToolsCommand) -> Result {
+pub(crate) fn run(workspace: &Workspace, command: &ToolsCommand) -> Result {
     match command {
-        ToolsCommand::Sync { group } => sync(workspace, group),
+        ToolsCommand::Sync { group } => sync(workspace, *group),
     }
 }
 
-pub fn doctor(workspace: &Workspace) -> Result {
+pub(crate) fn doctor(workspace: &Workspace) {
     println!("built-in:");
     for (name, args) in [("rustfmt", &["fmt"][..]), ("clippy", &["clippy"][..])] {
         let available = process::available("cargo".as_ref(), args);
@@ -104,10 +104,9 @@ pub fn doctor(workspace: &Workspace) -> Result {
         );
     }
     println!("\nInstall optional tools with `cargo xtask tools sync <group>`.");
-    Ok(())
 }
 
-pub fn execute<I, S>(workspace: &Workspace, tool: Tool, args: I) -> Result
+pub(crate) fn execute<I, S>(workspace: &Workspace, tool: Tool, args: I) -> Result
 where
     I: IntoIterator<Item = S>,
     S: AsRef<std::ffi::OsStr>,
@@ -128,10 +127,10 @@ where
                 .map(|argument| argument.as_ref().to_owned()),
         )
         .collect();
-    process::run_with_path(&workspace.root, program, args, Some(&local_bin(workspace)))
+    process::run_with_path(workspace.root(), program, args, Some(&local_bin(workspace)))
 }
 
-pub fn ensure(workspace: &Workspace, tool: Tool) -> Result {
+pub(crate) fn ensure(workspace: &Workspace, tool: Tool) -> Result {
     resolve_optional(workspace, tool).map_or_else(
         || {
             Err(format!(
@@ -155,7 +154,7 @@ fn sync(workspace: &Workspace, group: ToolGroup) -> Result {
             tool.version()
         );
         process::run(
-            &workspace.root,
+            workspace.root(),
             "cargo",
             [
                 "install",

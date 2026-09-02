@@ -4,10 +4,10 @@ use crate::scaffold;
 use crate::tools::{self, Tool};
 use crate::workspace::Workspace;
 
-pub fn run(workspace: &Workspace, command: ReleaseCommand) -> Result {
+pub(crate) fn run(workspace: &Workspace, command: ReleaseCommand) -> Result {
     match command {
         ReleaseCommand::Init => {
-            let has_binary = workspace.has_publishable_binary()?;
+            let has_binary = workspace.has_publishable_binary();
             if has_binary {
                 tools::ensure(workspace, Tool::Dist)?;
             }
@@ -22,9 +22,9 @@ pub fn run(workspace: &Workspace, command: ReleaseCommand) -> Result {
             }
         }
         ReleaseCommand::Plan { tag } => {
-            if !workspace.has_publishable_binary()? {
+            if !workspace.has_publishable_binary() {
                 return Err(
-                    "cargo-dist needs a publishable binary; run `cargo xtask scaffold cli` or scaffold a binary crate first"
+                    "cargo-dist needs a publishable binary; run `cargo xtask scaffold cli --entrypoint primary` or scaffold a publishable binary crate first"
                         .into(),
                 );
             }

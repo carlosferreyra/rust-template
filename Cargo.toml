@@ -1,5 +1,5 @@
 [workspace]
-members  = ["crates/*"]
+members  = ["crates/*", "tools/xtask"]
 resolver = "3"
 
 [workspace.dependencies]
@@ -19,7 +19,8 @@ keywords     = []
 categories   = []
 
 [workspace.metadata.xtask]
-public-crate = "{{project-name}}"
+crate-prefix  = "{{project-name}}"
+primary-crate = "{{project-name}}"
 
 [workspace.lints.rust]
 unsafe_code     = "warn"

@@ -4,7 +4,7 @@ use crate::process;
 use crate::tools::{self, Tool};
 use crate::workspace::Workspace;
 
-pub fn check(workspace: &Workspace) -> Result {
+pub(crate) fn check(workspace: &Workspace) -> Result {
     cargo(workspace, ["fmt", "--all", "--check"])?;
     cargo(workspace, ["check", "--workspace", "--all-targets"])?;
     cargo(
@@ -20,7 +20,7 @@ pub fn check(workspace: &Workspace) -> Result {
     )
 }
 
-pub fn test(workspace: &Workspace, args: &TestArgs) -> Result {
+pub(crate) fn test(workspace: &Workspace, args: &TestArgs) -> Result {
     check(workspace)?;
     if args.nextest {
         let mut nextest = vec!["run", "--workspace"];
@@ -38,7 +38,7 @@ pub fn test(workspace: &Workspace, args: &TestArgs) -> Result {
     }
 }
 
-pub fn build(workspace: &Workspace) -> Result {
+pub(crate) fn build(workspace: &Workspace) -> Result {
     test(
         workspace,
         &TestArgs {
@@ -49,7 +49,7 @@ pub fn build(workspace: &Workspace) -> Result {
     cargo(workspace, ["build", "--workspace", "--release"])
 }
 
-pub fn ci(workspace: &Workspace, full: bool) -> Result {
+pub(crate) fn ci(workspace: &Workspace, full: bool) -> Result {
     test(
         workspace,
         &TestArgs {
@@ -65,7 +65,7 @@ pub fn ci(workspace: &Workspace, full: bool) -> Result {
     Ok(())
 }
 
-pub fn coverage(workspace: &Workspace) -> Result {
+pub(crate) fn coverage(workspace: &Workspace) -> Result {
     tools::execute(workspace, Tool::Coverage, ["--workspace", "--html"])
 }
 
@@ -74,5 +74,5 @@ where
     I: IntoIterator<Item = S>,
     S: AsRef<std::ffi::OsStr>,
 {
-    process::run(&workspace.root, "cargo", args)
+    process::run(workspace.root(), "cargo", args)
 }
