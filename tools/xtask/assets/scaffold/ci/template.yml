@@ -25,14 +25,14 @@ jobs:
   template:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: @checkout@
       - run: rustup self update
-      - uses: moonrepo/setup-rust@v1.3.0
+      - uses: @setup-rust@
         with:
           inherit-toolchain: true
       - run: rustup toolchain install "$TEMPLATE_MSRV" --profile minimal
-      - uses: taiki-e/install-action@v2.87.24
+      - uses: @install@
         with:
-          tool: cargo-generate@0.25.0
+          tool: cargo-generate@@cargo-generate@
       - run: python3 scripts/update-tooling.py --check
       - run: bash scripts/test-template.sh

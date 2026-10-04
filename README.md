@@ -67,7 +67,8 @@ cargo xtask scaffold cli --entrypoint primary
 
 Both modes create `{{project-name}}-cli` for the command model. The companion
 mode owns the executable in that private package; the primary mode adds a thin
-binary wrapper to the primary package.
+binary wrapper to the primary package and makes the CLI crate publishable.
+Publish the CLI crate before the primary package when releasing to crates.io.
 
 ## More capabilities
 

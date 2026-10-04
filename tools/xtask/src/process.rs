@@ -78,7 +78,7 @@ pub(crate) fn available_version(program: &OsStr, prefix: &[&str], version: &str)
             output.status.success()
                 && [output.stdout, output.stderr]
                     .concat()
-                    .windows(version.len())
-                    .any(|window| window == version.as_bytes())
+                    .split(u8::is_ascii_whitespace)
+                    .any(|word| word == version.as_bytes())
         })
 }

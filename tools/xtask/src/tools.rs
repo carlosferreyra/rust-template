@@ -4,6 +4,7 @@ use std::path::PathBuf;
 use crate::Result;
 use crate::cli::{ToolGroup, ToolsCommand};
 use crate::process;
+use crate::tooling;
 use crate::workspace::Workspace;
 
 #[derive(Clone, Copy, Debug)]
@@ -56,16 +57,8 @@ impl Tool {
         }
     }
 
-    const fn version(self) -> &'static str {
-        match self {
-            Self::Nextest => "0.9.140",
-            Self::Coverage => "0.8.7",
-            Self::Deny => "0.20.2",
-            Self::Typos => "1.48.0",
-            Self::Dist => "0.32.0",
-            Self::Release => "1.1.3",
-            Self::Cliff => "2.13.1",
-        }
+    fn version(self) -> String {
+        tooling::version(self.package())
     }
 
     const fn prefix(self) -> &'static [&'static str] {
@@ -148,6 +141,13 @@ fn sync(workspace: &Workspace, group: ToolGroup) -> Result {
     std::fs::create_dir_all(local_root(workspace))
         .map_err(|error| format!("failed to create project tool directory: {error}"))?;
     for tool in tools(group) {
+        if matches!(tool, Tool::Coverage) {
+            process::run(
+                workspace.root(),
+                "rustup",
+                ["component", "add", "llvm-tools-preview"],
+            )?;
+        }
         println!(
             "installing {} {} under .xtask/tools",
             tool.package(),
@@ -175,12 +175,12 @@ fn sync(workspace: &Workspace, group: ToolGroup) -> Result {
 fn resolve_optional(workspace: &Workspace, tool: Tool) -> Option<PathBuf> {
     let local = local_bin(workspace).join(executable_name(tool.executable()));
     if local.is_file()
-        && process::available_version(local.as_os_str(), tool.prefix(), tool.version())
+        && process::available_version(local.as_os_str(), tool.prefix(), &tool.version())
     {
         return Some(local);
     }
     let global = PathBuf::from(tool.executable());
-    process::available_version(global.as_os_str(), tool.prefix(), tool.version()).then_some(global)
+    process::available_version(global.as_os_str(), tool.prefix(), &tool.version()).then_some(global)
 }
 
 fn tools(group: ToolGroup) -> &'static [Tool] {

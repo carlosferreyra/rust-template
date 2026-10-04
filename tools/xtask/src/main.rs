@@ -5,6 +5,7 @@ mod process;
 mod release;
 mod scaffold;
 mod tasks;
+mod tooling;
 mod tools;
 mod workspace;
 

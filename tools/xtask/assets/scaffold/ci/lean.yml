@@ -9,13 +9,16 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: moonrepo/setup-rust@v1
+      - uses: @checkout@
+      - run: rustup self update
+      - uses: @setup-rust@
         with:
           inherit-toolchain: true
-          components: clippy,rustfmt
       - run: cargo xtask ci

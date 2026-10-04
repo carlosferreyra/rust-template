@@ -22,7 +22,7 @@ pub(crate) fn add(workspace: &Workspace, entrypoint: CliEntrypoint, dry_run: boo
             &mut workspace_manifest,
             &cli_name,
             &cli_relative,
-            true,
+            false,
         )?;
     }
     workspace.align_workspace_dependency_version(&mut workspace_manifest, primary)?;
@@ -173,6 +173,7 @@ fn version_with_features(version: &str, features: &[&str]) -> InlineTable {
 
 fn cli_manifest(project: &str, cli_name: &str, entrypoint: CliEntrypoint) -> String {
     let companion = matches!(entrypoint, CliEntrypoint::Companion);
+    let publishing = if companion { "publish = false\n" } else { "" };
     let project_dependency = companion.then(|| format!("{project} = {{ workspace = true }}\n"));
     let binary = companion.then(|| {
         format!(
@@ -183,7 +184,7 @@ fn cli_manifest(project: &str, cli_name: &str, entrypoint: CliEntrypoint) -> Str
         "[package]\n\
          name = \"{cli_name}\"\n\
          description = \"Command-line model for {project}.\"\n\
-         publish = false\n\
+         {publishing}\
          version.workspace = true\n\
          edition.workspace = true\n\
          rust-version.workspace = true\n\

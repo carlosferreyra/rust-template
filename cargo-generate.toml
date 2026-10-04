@@ -1,6 +1,5 @@
 [template]
-cargo_generate_version = ">=0.21.0"
-# system::command in the post hook requires --allow-commands at the CLI.
+cargo_generate_version = ">=0.25.0"
 # `ignore` prevents files from being copied to the generated project.
 # Hook files (hooks/*.rhai) must NOT be in ignore — cargo-generate reads them
 # directly before generation. They are excluded from liquid processing only via `exclude`.
@@ -30,7 +29,6 @@ ignore = [
     "rustfmt.toml",
     "scripts",
     "typos.toml",
-    "LICENSE",
     ".claude",
 ]
 
@@ -42,6 +40,7 @@ exclude = [
 ]
 
 [hooks]
+pre = ["hooks/pre-generate.rhai"]
 post = ["hooks/post-generate.rhai"]
 
 [placeholders.github_username]

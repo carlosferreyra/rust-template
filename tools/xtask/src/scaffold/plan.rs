@@ -85,6 +85,39 @@ impl<'a> Plan<'a> {
     }
 
     pub(crate) fn apply(self, dry_run: bool) -> Result {
+        // Validate the entire plan, including parent paths, before any writes.
+        for write in &self.writes {
+            let path = self.workspace.path(&write.path);
+            for ancestor in path.ancestors() {
+                match fs::symlink_metadata(ancestor) {
+                    Ok(metadata) => {
+                        let valid = if ancestor == path {
+                            metadata.is_file()
+                        } else {
+                            metadata.is_dir()
+                        };
+                        if !valid {
+                            return Err(format!(
+                                "{} is not a regular {}",
+                                ancestor.display(),
+                                if ancestor == path {
+                                    "file"
+                                } else {
+                                    "directory"
+                                },
+                            ));
+                        }
+                    }
+                    Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+                    Err(error) => {
+                        return Err(format!("failed to inspect {}: {error}", ancestor.display()));
+                    }
+                }
+                if ancestor == self.workspace.root() {
+                    break;
+                }
+            }
+        }
         for write in &self.writes {
             println!(
                 "{:<9} {}",
