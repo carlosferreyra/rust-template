@@ -12,6 +12,7 @@ generate_project() {
     --path "$template_root" \
     --name "$name" \
     --destination "$destination" \
+    --allow-commands \
     --define github_username=smoke-user \
     --define author_name="Smoke Test" \
     --define author_email=smoke@example.com \
@@ -65,9 +66,6 @@ cargo xtask --help
 cargo xtask check
 cargo xtask test
 cargo xtask build
-if [ -n "${TEMPLATE_MSRV:-}" ]; then
-  cargo "+$TEMPLATE_MSRV" check --workspace --all-targets --locked
-fi
 
 # Library releases use cargo-release without forcing binary distribution.
 cargo xtask release init
@@ -155,21 +153,20 @@ test -f .github/workflows/ci.yml
 test -f deny.toml
 test -f typos.toml
 grep -Fq '${{ github.ref }}' .github/workflows/ci.yml
-python3 - "$template_root/tools/xtask/assets/tooling.toml" <<'PY'
+python3 - <<'PY'
 from pathlib import Path
-import sys
 import tomllib
 
-registry = tomllib.loads(Path(sys.argv[1]).read_text())
+registry = tomllib.loads(Path('tools/xtask/assets/tooling.toml').read_text())
 ci = Path('.github/workflows/ci.yml').read_text()
 audit = Path('.github/workflows/audit.yml').read_text()
 for name in ['checkout', 'setup-rust', 'install']:
     assert registry['actions'][name] in ci
 assert registry['actions']['checkout'] in audit
 assert registry['actions']['audit'] in audit
-for name in ['cargo-deny', 'typos-cli']:
-    assert f"{name}@{registry['tools'][name]['version']}" in ci
+assert 'tool: cargo-deny,typos-cli' in ci
 PY
+python3 "$template_root/scripts/test-tools.py" "$project"
 cargo xtask scaffold docs
 test -f CONTRIBUTING.md
 test -f crates/README.md
@@ -207,17 +204,5 @@ cargo run --package primary -- --version
 cargo run --package primary -- hello smoke
 cargo package --workspace --allow-dirty --no-verify
 
-# Every supported license can be generated without commands or network access.
-index=0
-for license_file in "$template_root"/hooks/licenses/*.txt; do
-  license=${license_file##*/}
-  license=${license%.txt}
-  index=$((index + 1))
-  generate_project "license-$index" "$license"
-  test -s "$destination/license-$index/LICENSE"
-  test ! -e "$destination/license-$index/hooks/licenses"
-  if grep -Eq '\{\{[^}]+\}\}' "$destination/license-$index/LICENSE"; then
-    echo "unresolved license placeholder for $license" >&2
-    exit 1
-  fi
-done
+# Exercise upgrades, failure paths, and bundled licenses with mocked upstreams.
+python3 "$template_root/scripts/test-generation.py"

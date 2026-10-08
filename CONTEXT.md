@@ -16,7 +16,7 @@ minimal-first growth model.
   `cargo xtask scaffold`.
 - **Capability:** optional project surface such as a CLI, CI, documentation, or
   release automation.
-- **Tool group:** pinned external binaries installed project-locally by
+- **Tool group:** latest stable external binaries installed project-locally by
   `cargo xtask tools sync`.
 - **Operational command:** a repeatable command such as `check`, `test`, `ci`,
   or `release plan`; it never installs tools implicitly.
@@ -36,7 +36,11 @@ minimal-first growth model.
 - Adding the CLI never overwrites the primary library source.
 - Cross-crate dependencies use a root workspace declaration and a member
   `{ workspace = true }` reference.
+- External dependency versions and action release tags resolve at generation
+  time; source placeholders become concrete versions in generated projects.
+- Generation requires network access and command permission, and checks the
+  workspace with current stable Rust before completing.
 - `xtask` resolves the workspace from any descendant directory.
-- Optional tools are pinned centrally and installed under `.xtask/tools`.
+- Optional tools resolve the latest stable release on sync and install under `.xtask/tools`.
 - Release commands delegate to dist and cargo-release.
 - Generated projects are snapshots and do not track template updates.

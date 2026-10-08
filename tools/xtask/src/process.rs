@@ -67,18 +67,3 @@ pub(crate) fn available(program: &OsStr, prefix: &[&str]) -> bool {
         .status()
         .is_ok_and(|status| status.success())
 }
-
-pub(crate) fn available_version(program: &OsStr, prefix: &[&str], version: &str) -> bool {
-    Command::new(program)
-        .args(prefix)
-        .arg("--version")
-        .stdin(Stdio::null())
-        .output()
-        .is_ok_and(|output| {
-            output.status.success()
-                && [output.stdout, output.stderr]
-                    .concat()
-                    .split(u8::is_ascii_whitespace)
-                    .any(|word| word == version.as_bytes())
-        })
-}

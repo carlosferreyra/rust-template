@@ -36,7 +36,7 @@ exclude = [
     "hooks/pre-generate.rhai",
     "hooks/post-generate.rhai",
     "tools/xtask/src/scaffold",
-    "tools/xtask/assets",
+    "tools/xtask/assets/scaffold",
 ]
 
 [hooks]

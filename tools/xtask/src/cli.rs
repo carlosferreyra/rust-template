@@ -30,7 +30,7 @@ pub(crate) enum Command {
     },
     /// Report the availability of optional development tools.
     Doctor,
-    /// Manage pinned, project-local development tools.
+    /// Sync latest stable tools locally and update Rust's stable toolchain.
     Tools {
         #[command(subcommand)]
         command: ToolsCommand,

@@ -4,7 +4,6 @@ use std::path::PathBuf;
 use crate::Result;
 use crate::cli::{ToolGroup, ToolsCommand};
 use crate::process;
-use crate::tooling;
 use crate::workspace::Workspace;
 
 #[derive(Clone, Copy, Debug)]
@@ -55,10 +54,6 @@ impl Tool {
             Self::Release => "cargo-release",
             Self::Cliff => "git-cliff",
         }
-    }
-
-    fn version(self) -> String {
-        tooling::version(self.package())
     }
 
     const fn prefix(self) -> &'static [&'static str] {
@@ -127,9 +122,8 @@ pub(crate) fn ensure(workspace: &Workspace, tool: Tool) -> Result {
     resolve_optional(workspace, tool).map_or_else(
         || {
             Err(format!(
-                "{} {} is missing; run `cargo xtask tools sync {}`",
+                "{} is missing; run `cargo xtask tools sync {}`",
                 tool.package(),
-                tool.version(),
                 group_for(tool)
             ))
         },
@@ -138,6 +132,19 @@ pub(crate) fn ensure(workspace: &Workspace, tool: Tool) -> Result {
 }
 
 fn sync(workspace: &Workspace, group: ToolGroup) -> Result {
+    process::run(workspace.root(), "rustup", ["update", "stable"])?;
+    process::run(
+        workspace.root(),
+        "rustup",
+        [
+            "component",
+            "add",
+            "--toolchain",
+            "stable",
+            "clippy",
+            "rustfmt",
+        ],
+    )?;
     std::fs::create_dir_all(local_root(workspace))
         .map_err(|error| format!("failed to create project tool directory: {error}"))?;
     for tool in tools(group) {
@@ -145,25 +152,29 @@ fn sync(workspace: &Workspace, group: ToolGroup) -> Result {
             process::run(
                 workspace.root(),
                 "rustup",
-                ["component", "add", "llvm-tools-preview"],
+                [
+                    "component",
+                    "add",
+                    "--toolchain",
+                    "stable",
+                    "llvm-tools-preview",
+                ],
             )?;
         }
         println!(
-            "installing {} {} under .xtask/tools",
+            "installing latest stable {} under .xtask/tools",
             tool.package(),
-            tool.version()
         );
         process::run(
             workspace.root(),
             "cargo",
             [
+                "+stable",
                 "install",
                 "--root",
                 local_root(workspace)
                     .to_str()
                     .ok_or("non-UTF-8 tool path")?,
-                "--version",
-                &format!("={}", tool.version()),
                 "--locked",
                 tool.package(),
             ],
@@ -174,13 +185,11 @@ fn sync(workspace: &Workspace, group: ToolGroup) -> Result {
 
 fn resolve_optional(workspace: &Workspace, tool: Tool) -> Option<PathBuf> {
     let local = local_bin(workspace).join(executable_name(tool.executable()));
-    if local.is_file()
-        && process::available_version(local.as_os_str(), tool.prefix(), &tool.version())
-    {
+    if local.is_file() && process::available(local.as_os_str(), tool.prefix()) {
         return Some(local);
     }
     let global = PathBuf::from(tool.executable());
-    process::available_version(global.as_os_str(), tool.prefix(), &tool.version()).then_some(global)
+    process::available(global.as_os_str(), tool.prefix()).then_some(global)
 }
 
 fn tools(group: ToolGroup) -> &'static [Tool] {

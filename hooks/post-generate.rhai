@@ -1,4 +1,6 @@
-// Post-generate guidance. License creation is handled by the pre hook.
+// Reject incompatible current releases before reporting generation success.
+system::command("cargo", ["+stable", "check", "--workspace", "--all-targets", "--target-dir", ".generation-target"]);
+file::delete(".generation-target");
 
 // ---------------------------------------------------------------------------
 // Next-step instructions
@@ -29,7 +31,7 @@ print("   cargo xtask release init");
 print("   cargo xtask release prepare");
 print("");
 print("   Re-generate non-interactively (every prompt has a `-d key=value` flag):");
-print("   cargo generate --git ... \\");
+print("   cargo generate --git ... --allow-commands \\");
 print("     --name <name> -d github_username=<u> -d author_name=\"...\" \\");
 print("     -d author_email=... -d project_description=\"...\" \\");
 print("     -d license=MIT");
